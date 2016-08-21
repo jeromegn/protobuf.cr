@@ -1,0 +1,43 @@
+message Test {
+    required string f1 = 1;
+    required int64 f2 = 2;
+    repeated uint64 fa = 3;
+    repeated int32 fb = 4;
+    repeated int32 fc = 5 [packed = true];
+    repeated Pair pairs = 6;
+    optional bytes bbbb = 7;
+
+    required uint32 uint32 = 10;
+    required uint64 uint64 = 11;
+    required sint32 sint32 = 12;
+    required sint64 sint64 = 13;
+    required bool bool = 14;
+
+    repeated SomeEnum enum = 15;
+
+    required fixed64 fixed64 = 16;
+    required sfixed64 sfixed64 = 17;
+    required double double = 18;
+
+    required fixed32 fixed32 = 19;
+    required sfixed32 sfixed32 = 20;
+    required float float = 21;
+
+    extensions 100 to max;
+}
+
+message Pair {
+    required string key = 1;
+    optional string value = 2;
+}
+
+enum SomeEnum {
+    YES = 1;
+    NO = 2;
+    NEVER = 3;
+}
+
+extend Test {
+    optional bool gtt = 100;
+    optional double gtg = 101;
+}

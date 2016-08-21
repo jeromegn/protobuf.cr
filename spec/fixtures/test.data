@@ -1,0 +1,43 @@
+f1: "dsfadsafsaf"
+f2: 234
+fa: 2342134
+fa: 2342135
+fa: 2342136
+fb: -2342134
+fb: -2342135
+fb: -2342136
+fc: 4
+fc: 7
+fc: -12
+fc: 4
+fc: 7
+fc: -3
+fc: 4
+fc: 7
+fc: 0
+pairs {
+  key: "sdfff"
+  value: "q\"qq\\q\n"
+}
+pairs {
+  key: "   sdfff2  \321\202\320\265\321\201\321\202 "
+  value: "q\tqq<>q2&\001"
+}
+bbbb: "\000\001\002\377\376\375"
+
+uint32: 4294967295
+uint64: 18446744073709551615
+sint32: -2147483648
+sint64: -9223372036854775808
+bool: 1
+enum: 1
+enum: 2
+enum: 3
+fixed64: 4294967296
+sfixed64: 2147483648
+double: 20.64
+fixed32: 4294967295
+sfixed32: 2147483647
+float: 20.32
+[gtt]: true
+[gtg]: 20.0855369
