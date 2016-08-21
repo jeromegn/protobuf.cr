@@ -1,6 +1,6 @@
 # protobuf [![Build Status](https://travis-ci.org/jeromegn/protobuf.cr.svg?branch=master)](https://travis-ci.org/jeromegn/protobuf.cr) [![Dependency Status](https://shards.rocks/badge/github/jeromegn/protobuf.cr/status.svg)](https://shards.rocks/github/jeromegn/protobuf.cr) [![devDependency Status](https://shards.rocks/badge/github/jeromegn/protobuf.cr/dev_status.svg)](https://shards.rocks/github/jeromegn/protobuf.cr)
 
-TODO: Write a description here
+Crystal shard to decode, encode and generate protobuf messages.
 
 ## Installation
 
@@ -24,13 +24,10 @@ Ubuntu
 
 Protobuf provides the `protoc` executable to encode, decode and **generate** language-specific protobuf messages via plugins.
 
-`shards` don't yet support shipping binaries, so you'll have to clone and generate yours by yourself.
-
-### 1. Generate the plugin binary
+### 1. Install the protoc plugin
 
 ```
-git clone https://github.com/jeromegn/protobuf.cr
-crystal build protobuf.cr/bin/protoc-gen-crystal.cr -o /usr/local/bin/protoc-gen-crystal # or anywhere in your PATH
+brew install jeromegn/tap/protoc-gen-crystal
 ```
 
 ### 2. Generate `.pb.cr` files
@@ -48,7 +45,7 @@ The generator is configurable via environment variables:
 
 ## Known Limitations
 
-- Does not support ASCII strings...
+- Does not support non-UTF8 strings...
 
 ## Development
 
