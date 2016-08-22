@@ -20,6 +20,10 @@ macOS:
 Ubuntu
 ```sudo apt-get install -y protobuf```
 
+## Versioning
+
+This library does not follow semver conventions for versioning. It started off at v2.0.0 because it supports protobuf v2. From there, it'll increment versions based on semver, except for breaking changes, where I will not increment the major version.
+
 ## Usage
 
 ### Decoding and encoding messages
@@ -29,6 +33,8 @@ Ubuntu
 Example:
 
 ```crystal
+require "protobuf"
+
 enum Foo
   FOO
 end
