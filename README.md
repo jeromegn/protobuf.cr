@@ -20,23 +20,70 @@ macOS:
 Ubuntu
 ```sudo apt-get install -y protobuf```
 
-## Generating Crystal protobuf messages
+## Usage
+
+## Decoding and encoding messages
+
+`to_protobuf(io : IO)` and `from_protobuf(io : IO)` are available on enums and anything that includes `Protobuf::Message` and defines a `contract`
+
+Example:
+
+```crystal
+enum Foo
+  FOO
+end
+
+struct MyMessage
+  include Protobuf::Message
+  contract do
+    # some required properties
+    required :prop_name, :int32, 1, default: 123
+    required :prop2, Foo, 2
+
+    # optional properties
+    optional :optional_prop_name, :string, 3
+
+    # repeated fields
+    repeated :my_array, :int32, 4 # produces a property of type Array(Int32)?
+  end
+end
+
+proto_io = File.read("path/to/encoded/protobuf") # get your IO in some way
+
+msg = MyMessage.from_protobuf(proto_io) # returns a an instance of MyMessage
+                                  # from a valid protobuf encoded message
+
+msg.to_protobuf # return a MemoryIO filled with the encoded message
+
+some_io = MemoryIO.new
+msg.to_protobuf(some_io) # fills up the provided IO with the encoded message
+```
+
+### Field types
+
+All field types supported by the protobuf protocol v2 are available as symbols or the name of a Crysta; struct or class.
+
+### Constructor
+
+Using the `contract` block creates an initializer with all the properties defined in it. It also creates an initializer which can consume a `Protobuf::Buffer` (used by `from_protobuf` method), not unlike `JSON::PullParser`.
+
+### Generating Crystal protobuf messages
 
 Protobuf provides the `protoc` executable to encode, decode and **generate** language-specific protobuf messages via plugins.
 
-### 1. Install the protoc plugin
+#### 1. Install the protoc plugin
 
 ```
 brew install jeromegn/tap/protoc-gen-crystal
 ```
 
-### 2. Generate `.pb.cr` files
+#### 2. Generate `.pb.cr` files
 
 ```bash
 protoc -I <.protos_basepath> --crystal_out <path_to_folder_for_protobufs> <path_to_{.proto,*.protos}>
 ```
 
-### Generator options
+#### Generator options
 
 The generator is configurable via environment variables:
 
