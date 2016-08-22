@@ -22,7 +22,7 @@ Ubuntu
 
 ## Usage
 
-## Decoding and encoding messages
+### Decoding and encoding messages
 
 `to_protobuf(io : IO)` and `from_protobuf(io : IO)` are available on enums and anything that includes `Protobuf::Message` and defines a `contract`
 
@@ -46,6 +46,8 @@ struct MyMessage
     # repeated fields
     repeated :my_array, :int32, 4 # produces a property of type Array(Int32)?
   end
+
+  # write your methods like you normally would here, if you like.
 end
 
 proto_io = File.read("path/to/encoded/protobuf") # get your IO in some way
@@ -59,11 +61,11 @@ some_io = MemoryIO.new
 msg.to_protobuf(some_io) # fills up the provided IO with the encoded message
 ```
 
-### Field types
+#### Field types
 
 All field types supported by the protobuf protocol v2 are available as symbols or the name of a Crysta; struct or class.
 
-### Constructor
+#### Constructor
 
 Using the `contract` block creates an initializer with all the properties defined in it. It also creates an initializer which can consume a `Protobuf::Buffer` (used by `from_protobuf` method), not unlike `JSON::PullParser`.
 
