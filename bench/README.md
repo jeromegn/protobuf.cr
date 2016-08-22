@@ -1,6 +1,6 @@
 # Benchmarks
 
-Compared to [beefcake](https://github.com/protobuf-ruby/beefcake), for 1 000 000 iterations.
+Compared to [beefcake](https://github.com/protobuf-ruby/beefcake), for 100 000 iterations.
 
 ### Beefcake ([source](https://github.com/protobuf-ruby/beefcake/blob/86e750e556eee930e089c4a5238db6b9b605681b/bench/simple.rb))
 
