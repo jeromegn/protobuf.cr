@@ -15,7 +15,7 @@ message encoding   2.130000   0.010000   2.140000 (  2.152908)
 message decoding   2.940000   0.010000   2.950000 (  3.006080)
 ```
 
-### protobuf.cr ([source](https://github.com/jeromegn/protobuf.cr/master/bench/simple.cr))
+### protobuf.cr ([source](https://github.com/jeromegn/protobuf.cr/blob/9365277142360686141835b86afa24949e527d20/bench/simple.cr))
 
 ```
 crystal run --release bench/simple.cr
