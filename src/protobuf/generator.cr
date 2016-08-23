@@ -257,13 +257,10 @@ module Protobuf
       type_name = unless field.type_name.nil?
         t = field.type_name.not_nil!
         t = t.gsub(/^\.{0,}#{package_name.not_nil!}\.*/, "") unless package_name.nil?
-        # STDERR.puts t
-        # STDERR.puts @package_map.to_s
         to_strip = @package_map.find do |k,v|
           t.match(/\.{0,}#{k}/)
         end
         t = t.gsub(/^\.{0,}#{to_strip[0]}/, "#{to_strip[1]}") if to_strip
-        # STDERR.puts t
         t.gsub(/^\.*/, "").split(".").map(&.camelcase).join("::")
       else
         ":#{field.type.to_s.sub(/^TYPE_/, "").downcase}"
@@ -276,7 +273,7 @@ module Protobuf
           field.type_name.nil? ?
             field.default_value :
             field.type == CodeGeneratorRequest::FieldDescriptorProto::Type::TYPE_ENUM ?
-              "#{type_name}[#{field.default_value}]" : # enum
+              "#{type_name}::#{field.default_value}" : # enum
               raise "can't use a default value for non-native / enum types"
         case field.type
         when CodeGeneratorRequest::FieldDescriptorProto::Type::TYPE_DOUBLE
