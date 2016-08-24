@@ -166,7 +166,9 @@ module Protobuf
       raise "no files to generate" if req.proto_file.nil?
       package_map = {} of String => String
       req.proto_file.not_nil!.each do |file|
-        package_map[file.package.not_nil!] = file.crystal_ns.join("::")
+        if !file.package.nil?
+          package_map[file.package.not_nil!] = file.crystal_ns.join("::")
+        end
       end
       files = req.proto_file.not_nil!.map do |file|
         generator = new(file, package_map)
@@ -284,7 +286,7 @@ module Protobuf
         field_desc += ", default: #{def_value}"
       end
       unless field.options.nil?
-        field_desc += "packed: true" if field.options.not_nil!.packed
+        field_desc += ", packed: true" if field.options.not_nil!.packed
       end
       puts field_desc
     end
