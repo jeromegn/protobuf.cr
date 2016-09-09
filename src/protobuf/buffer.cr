@@ -16,7 +16,7 @@ module Protobuf
       n = shift = 0
       loop do
         if shift >= 64
-          raise "buffer overflow varint"
+          raise Error.new("buffer overflow varint")
         end
         byte = @io.read_byte
         if byte.nil?
@@ -257,8 +257,7 @@ module Protobuf
       when {Bool, :bool}; write_bool(value)
 
       else
-        raise "#{value}, #{pb_type}"
-        # write_message(value)
+        raise Error.new("Crystal type #{value.class} and protobuf type #{pb_type} mismatch")
       end
     end
   end

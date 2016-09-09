@@ -163,7 +163,7 @@ end
 module Protobuf
   class Generator
     def self.compile(req)
-      raise "no files to generate" if req.proto_file.nil?
+      raise Error.new("no files to generate") if req.proto_file.nil?
       package_map = {} of String => String
       req.proto_file.not_nil!.each do |file|
         if !file.package.nil?
@@ -276,7 +276,7 @@ module Protobuf
             field.default_value :
             field.type == CodeGeneratorRequest::FieldDescriptorProto::Type::TYPE_ENUM ?
               "#{type_name}::#{field.default_value}" : # enum
-              raise "can't use a default value for non-native / enum types"
+              raise Error.new("can't use a default value for non-native / enum types")
         case field.type
         when CodeGeneratorRequest::FieldDescriptorProto::Type::TYPE_DOUBLE
           def_value += "_f64" if def_value
