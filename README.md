@@ -61,9 +61,9 @@ proto_io = File.read("path/to/encoded/protobuf") # get your IO in some way
 msg = MyMessage.from_protobuf(proto_io) # returns a an instance of MyMessage
                                   # from a valid protobuf encoded message
 
-msg.to_protobuf # return a MemoryIO filled with the encoded message
+msg.to_protobuf # return a IO::Memory filled with the encoded message
 
-some_io = MemoryIO.new
+some_io = IO::Memory.new
 msg.to_protobuf(some_io) # fills up the provided IO with the encoded message
 ```
 

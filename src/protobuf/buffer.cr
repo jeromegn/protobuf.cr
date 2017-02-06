@@ -108,7 +108,7 @@ module Protobuf
     def new_from_length
       slice = read_bytes
       return nil if slice.nil?
-      Protobuf::Buffer.new MemoryIO.new(slice)
+      Protobuf::Buffer.new IO::Memory.new(slice)
     end
 
     def decode_zigzag(value)
@@ -208,7 +208,7 @@ module Protobuf
     end
 
     def write_packed(arr, pb_type)
-      io = MemoryIO.new
+      io = IO::Memory.new
       tmp_buf = self.class.new(io)
       arr.not_nil!.each {|i| tmp_buf.write(i, pb_type) }
       write_uint64(io.bytesize.to_u64)
