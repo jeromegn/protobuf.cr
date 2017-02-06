@@ -138,7 +138,7 @@ module Protobuf
 
     macro _generate_encoder
       def to_protobuf
-        io = MemoryIO.new
+        io = IO::Memory.new
         to_protobuf(io)
         io
       end

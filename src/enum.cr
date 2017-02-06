@@ -13,7 +13,7 @@ abstract struct Enum
   end
 
   def to_protobuf(embedded = true)
-    io = MemoryIO.new
+    io = IO::Memory.new
     to_protobuf(io, embedded)
   end
 end
