@@ -102,7 +102,7 @@ module Protobuf
     end
 
     def read_bool
-      !!@io.read_byte
+      @io.read_byte == 1
     end
 
     def new_from_length
