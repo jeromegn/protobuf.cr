@@ -6,7 +6,7 @@ module TestMessagesProto3
   struct Test4
     include Protobuf::Message
 
-    contract3 do
+    contract_of "proto3" do
       repeated :d, :int32, 4
     end
   end

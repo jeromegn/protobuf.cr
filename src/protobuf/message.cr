@@ -3,16 +3,16 @@ module Protobuf
     macro contract
       FIELDS = {} of Int32 => HashLiteral(Symbol, ASTNode)
       {{yield}}
-      _generate_decoder 2
-      _generate_encoder 2
+      _generate_decoder "proto2"
+      _generate_encoder "proto2"
       _generate_getters_setters
     end
 
-    macro contract3
+    macro contract_of (syntax, &blk)
       FIELDS = {} of Int32 => HashLiteral(Symbol, ASTNode)
       {{yield}}
-      _generate_decoder 3
-      _generate_encoder 3
+      _generate_decoder {{syntax}}
+      _generate_encoder {{syntax}}
       _generate_getters_setters
     end
 
@@ -71,7 +71,7 @@ module Protobuf
             %}
             {% if field[:repeated] %}\
               %var{tag} ||= [] of {{field[:crystal_type]}}
-              {% if pbVer >= 3 || field[:packed] %}
+              {% if pbVer != "proto2" || field[:packed] %}
                 packed_buf_{{tag}} = buf.new_from_length.not_nil!
                 loop do
                   %packed_var{tag} = {{(!!pb_type ? "packed_buf_#{tag}.read_#{field[:pb_type].id}" : "#{field[:crystal_type]}.new(packed_buf_#{tag})").id}}
@@ -165,7 +165,7 @@ module Protobuf
           {% if field[:optional] %}
             if !@{{field[:name].id}}.nil?
               {% if field[:repeated] %}
-                {% if pbVer >= 3 || field[:packed] %}
+                {% if pbVer != "proto2" || field[:packed] %}
                   buf.write_info({{tag}}, 2)
                   buf.write_packed(@{{field[:name].id}}, {{field[:pb_type]}})
                 {% else %}

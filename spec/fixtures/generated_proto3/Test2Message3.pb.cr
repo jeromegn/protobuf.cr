@@ -6,7 +6,7 @@ module TestMessagesProto3
   struct Test2
     include Protobuf::Message
 
-    contract do
+    contract_of "proto3" do
       optional :b, :string, 2
     end
   end

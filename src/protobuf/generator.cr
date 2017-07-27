@@ -249,10 +249,9 @@ module Protobuf
 
         # use contract3() macro for proto3, otherwise use contract() macro
 
-        syntaxChar = ""
-        syntaxChar = "3" unless @file.syntax.nil? || @file.syntax != "proto3"
+        syntax = @file.syntax.nil? ? "proto2" : @file.syntax
 
-        puts "contract#{syntaxChar} do"
+        puts "contract_of \"#{syntax}\" do"
         indent do
           message_type.field.not_nil!.each { |f| field!(f) } unless message_type.field.nil?
         end
