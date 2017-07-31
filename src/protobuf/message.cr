@@ -1,12 +1,5 @@
 module Protobuf
   module Message
-    macro contract
-      FIELDS = {} of Int32 => HashLiteral(Symbol, ASTNode)
-      {{yield}}
-      _generate_decoder "proto2"
-      _generate_encoder "proto2"
-      _generate_getters_setters
-    end
 
     macro contract_of (syntax, &blk)
       FIELDS = {} of Int32 => HashLiteral(Symbol, ASTNode)
@@ -14,6 +7,10 @@ module Protobuf
       _generate_decoder {{syntax}}
       _generate_encoder {{syntax}}
       _generate_getters_setters
+    end
+
+    macro contract(&blk)
+      contract_of "proto2" {{blk}}
     end
 
     macro _add_field(tag, name, pb_type, options = {} of Symbol => Bool)
