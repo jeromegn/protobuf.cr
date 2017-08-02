@@ -222,7 +222,8 @@ module Protobuf
       unless enum_type.value.nil?
         indent do
           enum_type.not_nil!.value.not_nil!.each do |ev|
-            puts "#{ev.name} = #{ev.number}"
+            # Issue 9 - enum constants must start with Capital letter
+            puts "#{ev.name.not_nil!.camelcase} = #{ev.number}"
           end
         end
       end
