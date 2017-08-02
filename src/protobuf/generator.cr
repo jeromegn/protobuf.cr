@@ -1,3 +1,9 @@
+#NOTE: all descriptors defined here are derived from
+# https://github.com/google/protobuf/blob/master/src/google/protobuf/compiler/plugin.proto
+#
+# The protoc binary will pass a CodeGeneratorRequest in binary format to plugins
+# via STDIN and expect an encoded CodeGeneratorResponse on STDOUT
+
 module Protobuf
   struct CodeGeneratorRequest
     include Protobuf::Message
@@ -121,6 +127,8 @@ module Protobuf
 
         repeated :message_type, CodeGeneratorRequest::DescriptorProto,     4;
         repeated :enum_type,    CodeGeneratorRequest::EnumDescriptorProto, 5;
+
+        optional :syntax, :string, 12    # proto2 or proto3
       end
 
       def crystal_ns
@@ -139,6 +147,7 @@ module Protobuf
       optional :parameter, :string, 2
 
       repeated :proto_file, CodeGeneratorRequest::FileDescriptorProto, 15
+
     end
   end
 
@@ -237,7 +246,12 @@ module Protobuf
         message_type.enum_type.not_nil!.each { |et| enum!(et) } unless message_type.enum_type.nil?
         message_type.nested_type.not_nil!.each { |mt| message!(mt) } unless message_type.nested_type.nil?
         puts nil
-        puts "contract do"
+
+        # use contract3() macro for proto3, otherwise use contract() macro
+
+        syntax = @file.syntax.nil? ? "proto2" : @file.syntax
+
+        puts "contract_of \"#{syntax}\" do"
         indent do
           message_type.field.not_nil!.each { |f| field!(f) } unless message_type.field.nil?
         end

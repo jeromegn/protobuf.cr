@@ -1,12 +1,18 @@
 module Protobuf
   module Message
-    macro contract
+
+    macro contract_of (syntax, &blk)
       FIELDS = {} of Int32 => HashLiteral(Symbol, ASTNode)
       {{yield}}
-      _generate_decoder
-      _generate_encoder
+      _generate_decoder {{syntax}}
+      _generate_encoder {{syntax}}
       _generate_getters_setters
     end
+
+    macro contract(&blk)
+      contract_of "proto2" {{blk}}
+    end
+
     macro _add_field(tag, name, pb_type, options = {} of Symbol => Bool)
       {%
         t = Protobuf::PB_TYPE_MAP[pb_type] || pb_type
@@ -40,7 +46,7 @@ module Protobuf
       # puts "extensions: {{range.id}}"
     end
 
-    macro _generate_decoder
+    macro _generate_decoder (pbVer)
       def self.from_protobuf(io)
         new(Protobuf::Buffer.new(io))
       end
@@ -62,7 +68,7 @@ module Protobuf
             %}
             {% if field[:repeated] %}\
               %var{tag} ||= [] of {{field[:crystal_type]}}
-              {% if field[:packed] %}
+              {% if pbVer != "proto2" || field[:packed] %}
                 packed_buf_{{tag}} = buf.new_from_length.not_nil!
                 loop do
                   %packed_var{tag} = {{(!!pb_type ? "packed_buf_#{tag}.read_#{field[:pb_type].id}" : "#{field[:crystal_type]}.new(packed_buf_#{tag})").id}}
@@ -136,7 +142,7 @@ module Protobuf
       end
     end
 
-    macro _generate_encoder
+    macro _generate_encoder(pbVer)
       def to_protobuf
         io = IO::Memory.new
         to_protobuf(io)
@@ -156,7 +162,7 @@ module Protobuf
           {% if field[:optional] %}
             if !@{{field[:name].id}}.nil?
               {% if field[:repeated] %}
-                {% if field[:packed] %}
+                {% if pbVer != "proto2" || field[:packed] %}
                   buf.write_info({{tag}}, 2)
                   buf.write_packed(@{{field[:name].id}}, {{field[:pb_type]}})
                 {% else %}
