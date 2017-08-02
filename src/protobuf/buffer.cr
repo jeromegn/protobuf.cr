@@ -13,7 +13,7 @@ module Protobuf
     end
 
     def read_uint64
-      n = shift = 0
+      n = shift = 0_u64
       loop do
         if shift >= 64
           raise Error.new("buffer overflow varint")
@@ -24,7 +24,7 @@ module Protobuf
         end
         b = byte.unsafe_chr.ord
 
-        n |= ((b & 0x7F) << shift)
+        n |= ((b & 0x7F).to_u64 << shift)
         shift += 7
         if (b & 0x80) == 0
           return n.to_u64
