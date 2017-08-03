@@ -254,14 +254,14 @@ module Protobuf
 
         puts "contract_of \"#{syntax}\" do"
         indent do
-          message_type.field.not_nil!.each { |f| field!(f) } unless message_type.field.nil?
+          message_type.field.not_nil!.each { |f| field!(f, syntax) } unless message_type.field.nil?
         end
         puts "end"
       end
       puts "end"
     end
 
-    def field!(field)
+    def field!(field, syntax)
       met = case field.label
       when CodeGeneratorRequest::FieldDescriptorProto::Label::LABEL_OPTIONAL
         "optional"
@@ -297,11 +297,25 @@ module Protobuf
           def_value += "_f64" if def_value
         when CodeGeneratorRequest::FieldDescriptorProto::Type::TYPE_FLOAT
           def_value += "_f32" if def_value
+        when CodeGeneratorRequest::FieldDescriptorProto::Type::TYPE_INT64
+          def_value += "_i64" if def_value
+        when CodeGeneratorRequest::FieldDescriptorProto::Type::TYPE_UINT64
+          def_value += "_u64" if def_value
+        when CodeGeneratorRequest::FieldDescriptorProto::Type::TYPE_UINT32
+          def_value += "_u32" if def_value
         end
-        field_desc += ", default: #{def_value}"
+
+        # no default values in proto3
+
+        if syntax == "proto2"
+          field_desc += ", default: #{def_value}"
+        end
       end
       unless field.options.nil?
-        field_desc += ", packed: true" if field.options.not_nil!.packed
+        # all repeating fields use packed encoding in V3
+        if syntax == "proto2"
+          field_desc += ", packed: true" if field.options.not_nil!.packed
+        end
       end
       puts field_desc
     end
