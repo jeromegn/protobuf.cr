@@ -290,7 +290,7 @@ module Protobuf
           field.type_name.nil? ?
             field.default_value :
             field.type == CodeGeneratorRequest::FieldDescriptorProto::Type::TYPE_ENUM ?
-              "#{type_name}::#{field.default_value}" : # enum
+              "#{type_name}::#{field.default_value.not_nil!.camelcase}" : # enum
               raise Error.new("can't use a default value for non-native / enum types")
         case field.type
         when CodeGeneratorRequest::FieldDescriptorProto::Type::TYPE_DOUBLE
