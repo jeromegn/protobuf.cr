@@ -1,0 +1,39 @@
+syntax="proto3";
+
+message Test3 {
+    string f1 = 1;
+    int64 f2 = 2;
+    repeated uint64 fa = 3;
+    repeated int32 fb = 4;
+    repeated int32 fc = 5;
+    repeated Pair pairs = 6;
+    bytes bbbb = 7;
+
+    uint32 uint32 = 10;
+    uint64 uint64 = 11;
+    sint32 sint32 = 12;
+    sint64 sint64 = 13;
+    bool boolE = 14;
+
+    repeated SomeEnum enum = 15;
+
+    fixed64 fixed64 = 16;
+    sfixed64 sfixed64 = 17;
+    double double = 18;
+
+    fixed32 fixed32 = 19;
+    sfixed32 sfixed32 = 20;
+    float float = 21;
+}
+
+message Pair {
+    string key = 1;
+    string value = 2;
+}
+
+enum SomeEnum {
+  ZERO = 0;
+    YES = 1;
+    NO = 2;
+    NEVER = 3;
+}
