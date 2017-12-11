@@ -18,7 +18,7 @@ macOS:
 ```brew install protobuf```
 
 Ubuntu
-```sudo apt-get install -y protobuf```
+```sudo apt-get install -y protobuf-compiler```
 
 ## Versioning
 
