@@ -81,8 +81,16 @@ Protobuf provides the `protoc` executable to encode, decode and **generate** lan
 
 #### 1. Install the protoc plugin
 
+##### macOS:
 ```
 brew install jeromegn/tap/protoc-gen-crystal
+```
+
+##### Ubuntu:
+
+```
+crystal build bin/protoc-gen-crystal.cr
+cp protoc-gen-crystal ~/bin/
 ```
 
 #### 2. Generate `.pb.cr` files
