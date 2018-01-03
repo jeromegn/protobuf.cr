@@ -37,6 +37,20 @@ describe "Protobuf::Message" do
     str.should eq "1a03089601"
   end
 
+  it "V3 encode Test3 with repeated non-scalar" do
+    msg = TestMessagesV3::Test3.new
+
+    # repeated non-scalar should not be packed
+
+    pair1 = TestMessagesV3::Pair.new "key1", "val1"
+    msg.pairs = [] of TestMessagesV3::Pair
+    msg.pairs.not_nil!.push pair1
+
+    str = msg_to_protobuf_hexstring msg
+    # should not give type mismatch exception
+    #str.should eq "320c0a046b657931120476616c31"
+  end
+
   it "V3 encodes repeated (packed by default) Test4" do
     msg = TestMessagesProto3::Test4.new
     msg.d = [ 3,270, 86942]
