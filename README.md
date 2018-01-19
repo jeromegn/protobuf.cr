@@ -56,15 +56,17 @@ struct MyMessage
   # write your methods like you normally would here, if you like.
 end
 
-proto_io = File.read("path/to/encoded/protobuf") # get your IO in some way
+msg = MyMessage.new prop_name = 42, prop2 = Foo::FOO, optional_prop_name = "Foo" # create a struct as usual
+puts "Before serializing: #{msg}"
 
-msg = MyMessage.from_protobuf(proto_io) # returns a an instance of MyMessage
-                                  # from a valid protobuf encoded message
+io = IO::Memory.new
+msg.to_protobuf(io) # write the protobuf message to IO (could also be a File, network etc)
 
-msg.to_protobuf # return a IO::Memory filled with the encoded message
+io.pos = 0 # Seek back to the start of the IO::Memory ready for reading
 
-some_io = IO::Memory.new
-msg.to_protobuf(some_io) # fills up the provided IO with the encoded message
+decoded = MyMessage.from_protobuf(io) # returns an instance of MyMessage from a valid protobuf encoded message
+
+puts "After serializing: #{decoded}"
 ```
 
 #### Field types
