@@ -154,7 +154,7 @@ module Protobuf
         buf = Protobuf::Buffer.new(io)
         {% for tag, field in FIELDS %}
           %val{tag} = @{{field[:name].id}}
-          %is_enum{tag} = %val{tag}.is_a?(Enum) || %val{tag}.is_a?(Array) && %val{tag}.first.is_a?(Enum)
+          %is_enum{tag} = %val{tag}.is_a?(Enum) || %val{tag}.is_a?(Array) && %val{tag}.first?.is_a?(Enum)
           %wire{tag} = Protobuf::WIRE_TYPES.fetch({{field[:pb_type]}}, %is_enum{tag} ? 0 : 2)
           {%
             pb_type = Protobuf::PB_TYPE_MAP[field[:pb_type]]
