@@ -54,4 +54,9 @@ describe Protobuf::Message do
       test.should eq(test2) # OMG
     end
   end
+
+  it "encodes empty-list as repeated" do
+    test4 = TestMessagesProto2::Test4.new(d: [] of Int32)
+    test4.to_protobuf.empty?.should be_true
+  end
 end
