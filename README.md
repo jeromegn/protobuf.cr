@@ -34,7 +34,6 @@ Example:
 
 ```crystal
 require "protobuf"
-require "tempfile"
 
 enum Foo
   FOO
@@ -57,23 +56,15 @@ struct MyMessage
   # write your methods like you normally would here, if you like.
 end
 
-# MyMessage is just a normal struct - let's create one
-msg = MyMessage.new prop_name: 42, prop2: Foo::FOO, optional_prop_name: "Bar"
-puts "Before serialization: #{msg}"
+proto_io = File.read("path/to/encoded/protobuf") # get your IO in some way
 
-io_memory = msg.to_protobuf # io_memory is an IO::Memory of the encoded message
+msg = MyMessage.from_protobuf(proto_io) # returns a an instance of MyMessage
+                                  # from a valid protobuf encoded message
 
-# Or write the encoded message into any IO object - such as network, or a file
-tmpfile = Tempfile.open("my_message") do |output_file| 
-    msg.to_protobuf output_file # In this case we use a temporary file
-end
+msg.to_protobuf # return a IO::Memory filled with the encoded message
 
-# Now let's decode the message...
-input_file = File.open(tmpfile.path) # open an IO object (the file we just wrote)
-decoded_msg = MyMessage.from_protobuf(input_file) # return an instance of MyMessage
-
-puts "After serialization: #{decoded_msg}"
-tmpfile.delete # clean up the temporary file
+some_io = IO::Memory.new
+msg.to_protobuf(some_io) # fills up the provided IO with the encoded message
 ```
 
 #### Field types
