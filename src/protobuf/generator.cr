@@ -194,6 +194,7 @@ module Protobuf
 
     def initialize(@file : CodeGeneratorRequest::FileDescriptorProto, @package_map : Hash(String, String))
       @ns = ENV.fetch("PROTOBUF_NS", "").split("::").reject(&.empty?).concat(@file.crystal_ns)
+      @json = ENV.has_key? "PROTOBUF_JSON"
       @str = String::Builder.new
       @indentation = 0
     end
@@ -204,6 +205,7 @@ module Protobuf
         package_part = package_name ? "for #{package_name}" : ""
         puts "## Generated from #{@file.name} #{package_part}".strip
         puts "require \"protobuf\""
+        puts "require \"json\"" if @json
         puts nil
 
         ns! do
@@ -257,6 +259,15 @@ module Protobuf
           message_type.field.not_nil!.each { |f| field!(f, syntax) } unless message_type.field.nil?
         end
         puts "end"
+
+        if @json
+          puts nil
+          puts "JSON.mapping({"
+          indent do
+            message_type.field.not_nil!.each { |f| json_field!(f) } unless message_type.field.nil?
+          end
+          puts "})"
+        end
       end
       puts "end"
     end
@@ -318,6 +329,32 @@ module Protobuf
         end
       end
       puts field_desc
+    end
+
+    def json_field!(field)
+      type_name = unless field.type_name.nil?
+        t = field.type_name.not_nil!
+        t = t.gsub(/^\.{0,}#{package_name.not_nil!}\.*/, "") unless package_name.nil?
+        to_strip = @package_map.find do |k, v|
+          t.match(/\.{0,}#{k}/)
+        end
+        t = t.gsub(/^\.{0,}#{to_strip[0]}/, "#{to_strip[1]}") if to_strip
+        t.gsub(/^\.*/, "").split(".").map(&.camelcase).join("::")
+      else
+        "#{field.type.to_s.sub(/^TYPE_/, "").capitalize}"
+      end
+
+      nilable = field.label != CodeGeneratorRequest::FieldDescriptorProto::Label::LABEL_REQUIRED
+      repeated = field.label == CodeGeneratorRequest::FieldDescriptorProto::Label::LABEL_REPEATED
+
+      field_name = field.name.not_nil!.underscore
+      # Protobuf canonical representation is lower leading letter camelcase
+      protobuf_field_name = field_name.camelcase.sub(0, field_name[0])
+      crystal_type_name = repeated ? "Array(#{type_name})" : type_name
+
+      mapping = %({type: #{crystal_type_name}, nilable: #{nilable}, key: "#{protobuf_field_name}"})
+
+      puts "#{field_name}: #{mapping},"
     end
 
     def indent
