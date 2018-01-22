@@ -34,6 +34,7 @@ Example:
 
 ```crystal
 require "protobuf"
+require "tempfile"
 
 enum Foo
   FOO
