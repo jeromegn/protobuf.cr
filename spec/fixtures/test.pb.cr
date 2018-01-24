@@ -44,6 +44,13 @@ enum SomeEnum
   NEVER = 3
 end
 
+class EmptyMessage
+  include Protobuf::Message
+
+  contract do
+  end
+end
+
 # extend Test {
 #     optional bool gtt = 100;
 #     optional double gtg = 101;
