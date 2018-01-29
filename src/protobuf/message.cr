@@ -197,13 +197,11 @@ module Protobuf
 
     macro _generate_hash_getters
       def [](key : String)
-        case key
         {% for tag, field in FIELDS %}
-          when {{field[:name].id.stringify}} ; self.{{field[:name].id}}
+          return self.{{field[:name].id}} if {{field[:name].id.stringify}} == key
         {% end %}
-        else
-          raise Protobuf::Error.new("Field not found: `#{key}`")
-        end
+
+        raise Protobuf::Error.new("Field not found: `#{key}`")
       end
     end
 

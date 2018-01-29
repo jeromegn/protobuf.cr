@@ -13,6 +13,13 @@ describe Protobuf::Message do
       end
     end
 
+    it "works if no fields" do
+      empty = EmptyMessage.new
+      expect_raises(Protobuf::Error, /Field not found/) do
+        empty["blah"]
+      end
+    end
+
     context "when the key is not a member" do
       it "raises a runtime error" do
         File.open("#{__DIR__}/../fixtures/test.data.encoded") do |io|
