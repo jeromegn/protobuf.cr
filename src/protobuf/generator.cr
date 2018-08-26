@@ -124,6 +124,7 @@ module Protobuf
       contract do
         optional :name, :string, 1       # file name, relative to root of source tree
         optional :package, :string, 2    # e.g. "foo", "foo.bar", etc.
+        repeated :dependency, :string, 3
 
         repeated :message_type, CodeGeneratorRequest::DescriptorProto,     4;
         repeated :enum_type,    CodeGeneratorRequest::EnumDescriptorProto, 5;
@@ -206,6 +207,11 @@ module Protobuf
         puts "require \"protobuf\""
         puts nil
 
+        unless @file.dependency.nil?
+          @file.dependency.not_nil!.each { |dp| puts "require \"./#{File.basename(dp.not_nil!, ".proto") + ".pb.cr"}\"" }
+          puts nil
+        end
+
         ns! do
           unless @file.enum_type.nil?
             @file.enum_type.not_nil!.each { |et| enum!(et) }
@@ -252,11 +258,13 @@ module Protobuf
 
         syntax = @file.syntax.nil? ? "proto2" : @file.syntax
 
-        puts "contract_of \"#{syntax}\" do"
-        indent do
-          message_type.field.not_nil!.each { |f| field!(f, syntax) } unless message_type.field.nil?
+        unless message_type.field.nil?
+          puts "contract_of \"#{syntax}\" do"
+          indent do
+            message_type.field.not_nil!.each { |f| field!(f, syntax) } unless message_type.field.nil?
+          end
+          puts "end"
         end
-        puts "end"
       end
       puts "end"
     end
