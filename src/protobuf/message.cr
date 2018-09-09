@@ -1,6 +1,5 @@
 module Protobuf
   module Message
-
     macro contract_of (syntax, &blk)
       FIELDS = {} of Int32 => HashLiteral(Symbol, ASTNode)
       {{yield}}
@@ -232,6 +231,11 @@ module Protobuf
     def ==(other : Protobuf::Message)
       self.class == other.class &&
         to_protobuf.to_slice == other.to_protobuf.to_slice
+    end
+
+    IncludedNames = [] of String
+    macro included
+      {% Protobuf::Message::IncludedNames << @type.stringify if !(@type.stringify =~ /^Protobuf::/) %}
     end
   end
 end

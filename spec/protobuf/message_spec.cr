@@ -59,4 +59,10 @@ describe Protobuf::Message do
     test4 = TestMessagesProto2::Test4.new(d: [] of Int32)
     test4.to_protobuf.empty?.should be_true
   end
+
+  describe "IncludedNames" do
+    it "contains all names of included classes" do
+      Protobuf::Message::IncludedNames.should contain("TestMessagesProto2::Test4")
+    end
+  end
 end
