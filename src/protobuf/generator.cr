@@ -104,6 +104,76 @@ module Protobuf
       end
     end
 
+    struct ServiceDescriptorProto
+      include Protobuf::Message
+
+      contract do
+        optional :name, :string, 1
+        repeated :method, MethodDescriptorProto, 2
+        optional :options, ServiceOptions, 3
+      end
+    end
+
+    struct MethodDescriptorProto
+      include Protobuf::Message
+
+      contract do
+        optional :name, :string, 1
+        optional :input_type, :string, 2
+        optional :output_type, :string, 3
+        optional :options, MethodOptions, 4
+        optional :client_streaming, :bool, 5, default: false
+        optional :server_streaming, :bool, 6, default: false
+      end
+    end
+
+    struct ServiceOptions
+      include Protobuf::Message
+
+      contract do
+        optional :deprecated, :bool, 33, default: false
+        repeated :uninterpreted_option, UninterpretedOption, 999
+      end
+    end
+
+    struct MethodOptions
+      include Protobuf::Message
+      enum IdempotencyLevel
+        IDEMPOTENCYUNKNOWN = 0
+        NOSIDEEFFECTS = 1
+        IDEMPOTENT = 2
+      end
+
+      contract do
+        optional :deprecated, :bool, 33, default: false
+        optional :idempotency_level, MethodOptions::IdempotencyLevel, 34, default: MethodOptions::IdempotencyLevel::IDEMPOTENCYUNKNOWN
+        repeated :uninterpreted_option, UninterpretedOption, 999
+      end
+    end
+
+    struct UninterpretedOption
+      include Protobuf::Message
+
+      struct NamePart
+        include Protobuf::Message
+
+        contract do
+          required :name_part, :string, 1
+          required :is_extension, :bool, 2
+        end
+      end
+
+      contract do
+        repeated :name, UninterpretedOption::NamePart, 2
+        optional :identifier_value, :string, 3
+        optional :positive_int_value, :uint64, 4
+        optional :negative_int_value, :int64, 5
+        optional :double_value, :double, 6
+        optional :string_value, :bytes, 7
+        optional :aggregate_value, :string, 8
+      end
+    end
+
     struct DescriptorProto
       include Protobuf::Message
 
@@ -126,8 +196,9 @@ module Protobuf
         optional :package, :string, 2    # e.g. "foo", "foo.bar", etc.
         repeated :dependency, :string, 3
 
-        repeated :message_type, CodeGeneratorRequest::DescriptorProto,     4;
-        repeated :enum_type,    CodeGeneratorRequest::EnumDescriptorProto, 5;
+        repeated :message_type, CodeGeneratorRequest::DescriptorProto,        4
+        repeated :enum_type,    CodeGeneratorRequest::EnumDescriptorProto,    5
+        repeated :service,      CodeGeneratorRequest::ServiceDescriptorProto, 6
 
         optional :syntax, :string, 12    # proto2 or proto3
       end
@@ -219,6 +290,9 @@ module Protobuf
           unless @file.message_type.nil?
             @file.message_type.not_nil!.each { |mt| message!(mt) }
           end
+          if service = @file.service
+            service.each { |st| service!(st) }
+          end
         end
       end
     end
@@ -238,6 +312,28 @@ module Protobuf
 
     def package_name
       @package_name ||= @file.package
+    end
+
+    def service!(service)
+      puts nil
+      puts "abstract struct #{service.name}"
+      indent do
+        puts "include Protobuf::Service"
+        puts nil
+
+        service.method.not_nil!.each do |method|
+          #  optional :name, :string, 1
+          #  optional :input_type, :string, 2
+          #  optional :output_type, :string, 3
+          #  optional :options, MethodOptions, 4
+          #  optional :client_streaming, :bool, 5, default: false
+          #  optional :server_streaming, :bool, 6, default: false
+          input_type = method.input_type.not_nil!.lstrip('.')
+          output_type = method.output_type.not_nil!.lstrip('.')
+          puts "abstract def #{method.name.not_nil!.underscore}(value : #{input_type}) : #{output_type}"
+        end
+      end
+      puts "end"
     end
 
     def message!(message_type)
