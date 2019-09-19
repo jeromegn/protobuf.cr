@@ -3,6 +3,10 @@ module Protobuf
     def initialize(@io : IO)
     end
 
+    def initialize(buf : Bytes)
+      @io = IO::Memory.new buf
+    end
+
     def skip(wire)
       case wire
       when 0 then read_uint64
@@ -216,9 +220,10 @@ module Protobuf
     end
 
     def write_message(msg : Protobuf::Message)
-      io = msg.to_protobuf
-      write_uint64(io.bytesize.to_u64)
-      write_io(io.rewind)
+      buf = msg.to_protobuf
+      io = IO::Memory.new buf
+      write_uint64(buf.bytesize.to_u64)
+      write_io(io)
     end
 
     def write_message(e : Enum)

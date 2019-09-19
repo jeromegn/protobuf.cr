@@ -144,10 +144,10 @@ module Protobuf
     end
 
     macro _generate_encoder(pbVer)
-      def to_protobuf
+      def to_protobuf : Bytes
         io = IO::Memory.new
         to_protobuf(io)
-        io
+        io.to_slice
       end
 
       def to_protobuf(io : IO, embedded = false)
