@@ -50,7 +50,7 @@ describe Protobuf::Message do
     File.open("#{__DIR__}/../fixtures/test.data.encoded") do |io|
       test = Test.from_protobuf(io)
       encoded = test.to_protobuf
-      test2 = Test.from_protobuf(encoded.rewind)
+      test2 = Test.from_protobuf(encoded)
       test.should eq(test2) # OMG
     end
   end

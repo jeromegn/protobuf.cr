@@ -7,6 +7,11 @@ abstract struct Enum
     new(Protobuf::Buffer.new(io))
   end
 
+  def self.from_protobuf(buf : Bytes)
+    io = IO::Memory.new buf
+    from_protobuf io
+  end
+
   def to_protobuf(io : IO, embedded = true)
     buf = Protobuf::Buffer.new(io)
     buf.write_uint64(self.to_i.to_u64)
