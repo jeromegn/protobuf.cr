@@ -210,7 +210,13 @@ module Protobuf
     def write_packed(arr, pb_type)
       io = IO::Memory.new
       tmp_buf = self.class.new(io)
-      arr.not_nil!.each {|i| tmp_buf.write(i, pb_type) }
+      arr.not_nil!.each do |i|
+        if i.responds_to? :to_protobuf
+          i.to_protobuf(io)
+        else
+          tmp_buf.write(i, pb_type)
+        end
+      end
       write_uint64(io.bytesize.to_u64)
       write_io(io.rewind)
     end
