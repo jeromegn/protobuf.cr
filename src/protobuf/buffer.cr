@@ -32,6 +32,29 @@ module Protobuf
       end
     end
 
+    def peek_uint64
+      n = shift = 0_u64
+      pos = @io.pos
+      loop do
+        if shift >= 64
+          raise Error.new("buffer overflow varint")
+        end
+        byte = @io.read_byte
+        if byte.nil?
+          @io.pos = pos
+          return nil
+        end
+        b = byte.unsafe_chr.ord
+
+        n |= ((b & 0x7F).to_u64 << shift)
+        shift += 7
+        if (b & 0x80) == 0
+          @io.pos = pos
+          return n.to_u64
+        end
+      end
+    end
+
     def read_uint32
       n = read_uint64
       return nil if n.nil?
@@ -132,6 +155,14 @@ module Protobuf
       {tag, wire}
     end
 
+    def peek_info
+      n = peek_uint64
+      return {nil, nil} if n.nil?
+      tag = n >> 3
+      wire = (n & 0x7)
+
+      {tag, wire}
+    end
 
     def write_uint64(n : UInt64)
       loop do

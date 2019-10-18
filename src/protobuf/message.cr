@@ -75,6 +75,11 @@ module Protobuf
                   %packed_var{tag} = {{(!!pb_type ? "packed_buf_#{tag}.read_#{field[:pb_type].id}" : "#{field[:crystal_type]}.new(packed_buf_#{tag})").id}}
                   break if %packed_var{tag}.nil?
                   %var{tag} << %packed_var{tag}
+
+                  next_tag, _ = packed_buf_{{tag}}.peek_info
+                  if next_tag.nil?
+                    break
+                  end
                 end
               {% else %}
                 {% if !field[:native] %}
