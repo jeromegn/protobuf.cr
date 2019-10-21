@@ -12,27 +12,7 @@ module Protobuf
       end
     end
 
-    def read_uint64
-      n = shift = 0_u64
-      loop do
-        if shift >= 64
-          raise Error.new("buffer overflow varint")
-        end
-        byte = @io.read_byte
-        if byte.nil?
-          return nil
-        end
-        b = byte.unsafe_chr.ord
-
-        n |= ((b & 0x7F).to_u64 << shift)
-        shift += 7
-        if (b & 0x80) == 0
-          return n.to_u64
-        end
-      end
-    end
-
-    def peek_uint64
+    def read_uint64(peek=false)
       n = shift = 0_u64
       pos = @io.pos
       loop do
@@ -41,7 +21,7 @@ module Protobuf
         end
         byte = @io.read_byte
         if byte.nil?
-          @io.pos = pos
+          @io.pos = pos if peek
           return nil
         end
         b = byte.unsafe_chr.ord
@@ -49,10 +29,14 @@ module Protobuf
         n |= ((b & 0x7F).to_u64 << shift)
         shift += 7
         if (b & 0x80) == 0
-          @io.pos = pos
+          @io.pos = pos if peek
           return n.to_u64
         end
       end
+    end
+
+    def peek_uint64
+      read_uint64(peek: true)
     end
 
     def read_uint32
@@ -146,8 +130,8 @@ module Protobuf
       read(n)
     end
 
-    def read_info
-      n = read_uint64
+    def read_info(peek=false)
+      n = peek ? peek_uint64 : read_uint64
       return {nil, nil} if n.nil?
       tag = n >> 3
       wire = (n & 0x7)
@@ -156,12 +140,7 @@ module Protobuf
     end
 
     def peek_info
-      n = peek_uint64
-      return {nil, nil} if n.nil?
-      tag = n >> 3
-      wire = (n & 0x7)
-
-      {tag, wire}
+      read_info(peek: true)
     end
 
     def write_uint64(n : UInt64)

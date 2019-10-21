@@ -6,6 +6,11 @@ describe Protobuf::Buffer do
       buf = Protobuf::Buffer.new(io)
 
       # f1: "dsfadsafsaf"
+      5.times do
+        buf.peek_info.should eq({1, 2})
+      end
+
+      # f1: "dsfadsafsaf"
       buf.read_info.should eq({1, 2})
       buf.read_string.should eq("dsfadsafsaf")
 
