@@ -147,7 +147,7 @@ module Protobuf
       def to_protobuf
         io = IO::Memory.new
         to_protobuf(io)
-        io
+        io.rewind
       end
 
       def to_protobuf(io : IO, embedded = false)

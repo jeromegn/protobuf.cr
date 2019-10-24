@@ -284,14 +284,11 @@ module Protobuf
         end
 
         ns! do
-          unless @file.enum_type.nil?
-            @file.enum_type.not_nil!.each { |et| enum!(et) }
+          if enum_type = @file.enum_type
+            enum_type.each { |et| enum!(et) }
           end
-          unless @file.message_type.nil?
-            @file.message_type.not_nil!.each { |mt| message!(mt) }
-          end
-          if service = @file.service
-            service.each { |st| service!(st) }
+          if message_type = @file.message_type
+            message_type.each { |mt| message!(mt) }
           end
         end
       end
@@ -312,28 +309,6 @@ module Protobuf
 
     def package_name
       @package_name ||= @file.package
-    end
-
-    def service!(service)
-      puts nil
-      puts "abstract struct #{service.name}"
-      indent do
-        puts "include Protobuf::Service"
-        puts nil
-
-        service.method.not_nil!.each do |method|
-          #  optional :name, :string, 1
-          #  optional :input_type, :string, 2
-          #  optional :output_type, :string, 3
-          #  optional :options, MethodOptions, 4
-          #  optional :client_streaming, :bool, 5, default: false
-          #  optional :server_streaming, :bool, 6, default: false
-          input_type = method.input_type.not_nil!.lstrip('.')
-          output_type = method.output_type.not_nil!.lstrip('.')
-          puts "abstract def #{method.name.not_nil!.underscore}(value : #{input_type}) : #{output_type}"
-        end
-      end
-      puts "end"
     end
 
     def message!(message_type)
