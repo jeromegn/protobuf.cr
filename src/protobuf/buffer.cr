@@ -78,7 +78,7 @@ module Protobuf
       n = read_uint64
       return nil if n.nil?
       if n > Int64::MAX
-        n -= (1 << 64)
+        n -= Int64::MAX.to_u64 + 1_u64
       end
       n.to_i64!
     end
