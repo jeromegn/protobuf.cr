@@ -35,7 +35,7 @@ module Protobuf
     def read_uint32
       n = read_uint64
       return nil if n.nil?
-      n.to_u32
+      n.to_u32!
     end
 
     def read(n : Int32)
@@ -78,27 +78,27 @@ module Protobuf
       n = read_uint64
       return nil if n.nil?
       if n > Int64::MAX
-        n -= (1 << 64)
+        n -= Int64::MAX.to_u64 + 1_u64
       end
-      n.to_i64
+      n.to_i64!
     end
 
     def read_int32
       n = read_int64
       return nil if n.nil?
-      n.to_i32
+      n.to_i32!
     end
 
     def read_sint32
       n = decode_zigzag(read_uint32)
       return nil if n.nil?
-      n.to_i32
+      n.to_i32!
     end
 
     def read_sint64
       n = decode_zigzag(read_uint64)
       return nil if n.nil?
-      n.to_i64
+      n.to_i64!
     end
 
     def read_bool
@@ -138,10 +138,10 @@ module Protobuf
         bits = n & 0x7F
         n >>= 7
         if n == 0
-          @io.write_byte(bits.to_u8)
+          @io.write_byte(bits.to_u8!)
           break
         end
-        @io.write_byte (bits | 0x80).to_u8
+        @io.write_byte (bits | 0x80).to_u8!
       end
     end
 
@@ -179,19 +179,19 @@ module Protobuf
 
     def write_int64(n : Int64)
       n += (1 << 64) if n < 0
-      write_uint64(n.to_u64)
+      write_uint64(n.to_u64!)
     end
 
     def write_int32(n : Int32)
-      write_uint64(n.to_u64)
+      write_uint64(n.to_u64!)
     end
 
     def write_sint32(n : Int32)
-      write_uint64(((n << 1) ^ (n >> 31)).to_u64)
+      write_uint64(((n << 1) ^ (n >> 31)).to_u64!)
     end
 
     def write_sint64(n : Int64)
-      write_uint64(((n << 1) ^ (n >> 63)).to_u64)
+      write_uint64(((n << 1) ^ (n >> 63)).to_u64!)
     end
 
     def write_bool(b : Bool)
@@ -199,7 +199,7 @@ module Protobuf
     end
 
     def write_bytes(bytes : Slice(UInt8))
-      write_uint64(bytes.bytesize.to_u64)
+      write_uint64(bytes.bytesize.to_u64!)
       @io.write(bytes)
     end
 
@@ -211,13 +211,13 @@ module Protobuf
       io = IO::Memory.new
       tmp_buf = self.class.new(io)
       arr.not_nil!.each {|i| tmp_buf.write(i, pb_type) }
-      write_uint64(io.bytesize.to_u64)
+      write_uint64(io.bytesize.to_u64!)
       write_io(io.rewind)
     end
 
     def write_message(msg : Protobuf::Message)
       io = msg.to_protobuf
-      write_uint64(io.bytesize.to_u64)
+      write_uint64(io.bytesize.to_u64!)
       write_io(io.rewind)
     end
 
@@ -230,7 +230,7 @@ module Protobuf
     end
 
     def write_info(tag : Int32, wire : Int32)
-      write_uint64 (tag << 3 | wire).to_u64
+      write_uint64 (tag << 3 | wire).to_u64!
     end
 
     def write(value, pb_type)
