@@ -1,5 +1,5 @@
 module Protobuf
-  class Buffer
+  struct Buffer
     def initialize(@io : IO)
     end
 
