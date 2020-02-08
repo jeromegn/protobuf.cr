@@ -4,4 +4,14 @@ version: 2.1.2
 authors:
   - Jerome Gravel-Niquet <jeromegn@gmail.com>
 
+scripts:
+  postinstall: shards build && mkdir -p ../../bin && cp bin/protoc-gen-crystal ../../bin
+
+executables:
+  - protoc-gen-crystal
+
+targets:
+  protoc-gen-crystal:
+    main: bin/protoc-gen-crystal.cr
+
 license: MIT
