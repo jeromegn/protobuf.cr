@@ -5,7 +5,7 @@ authors:
   - Jerome Gravel-Niquet <jeromegn@gmail.com>
 
 scripts:
-  postinstall: shards build && mkdir -p ../../bin && cp bin/protoc-gen-crystal ../../bin
+  postinstall: shards build
 
 executables:
   - protoc-gen-crystal
