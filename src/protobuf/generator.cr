@@ -204,7 +204,7 @@ module Protobuf
       end
 
       def crystal_ns
-        to_strip = ENV.fetch("STRIP_FROM_PACKAGE", package || "")
+        to_strip = ENV.fetch("STRIP_FROM_PACKAGE", "")
         unless package.nil?
           stripped = package.not_nil!.gsub(to_strip, "")
           stripped.sub(/^\.*/, "").split(".").reject(&.empty?).map(&.camelcase)
