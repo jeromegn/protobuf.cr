@@ -45,9 +45,13 @@ module Protobuf
     end
 
     def read_string
-      bytes = read_bytes
-      return nil if bytes.nil?
-      String.new(bytes)
+      n = read_int32
+      return nil if n.nil?
+
+      String.new(n) do |buffer|
+        @io.read_fully(Slice.new(buffer, n))
+        {n, 0}
+      end
     end
 
     def read_fixed32
