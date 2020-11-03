@@ -16,13 +16,13 @@ module Protobuf
 
     macro _add_field(tag, name, pb_type, options = {} of Symbol => Bool)
       {%
-        t = Protobuf::PB_TYPE_MAP[pb_type] || pb_type
+        t = ::Protobuf::PB_TYPE_MAP[pb_type] || pb_type
         FIELDS[tag] = {
           name:         name,
           pb_type:      pb_type,
           crystal_type: t,
           cast_type:    options[:repeated] ? "Array(#{t})?".id : options[:optional] ? "#{t}?".id : t.id,
-          native:       !!Protobuf::PB_TYPE_MAP[pb_type],
+          native:       !!::Protobuf::PB_TYPE_MAP[pb_type],
           optional:     !!options[:optional] || !!options[:repeated],
           repeated:     !!options[:repeated],
           default:      options[:default],
@@ -49,10 +49,10 @@ module Protobuf
 
     macro _generate_decoder (pbVer)
       def self.from_protobuf(io)
-        new(Protobuf::Buffer.new(io))
+        new(::Protobuf::Buffer.new(io))
       end
 
-      def initialize(buf : Protobuf::Buffer)
+      def initialize(buf : ::Protobuf::Buffer)
         {% for tag, field in FIELDS %}
           %var{tag} = nil
           %found{tag} = false
@@ -64,7 +64,7 @@ module Protobuf
           when {{tag}}
             %found{tag} = true
             {%
-              pb_type = Protobuf::PB_TYPE_MAP[field[:pb_type]]
+              pb_type = ::Protobuf::PB_TYPE_MAP[field[:pb_type]]
               reader = !!pb_type ? "buf.read_#{field[:pb_type].id}" : "#{field[:crystal_type]}.new(buf)"
             %}
             {% if field[:repeated] %}\
@@ -151,13 +151,13 @@ module Protobuf
       end
 
       def to_protobuf(io : IO, embedded = false)
-        buf = Protobuf::Buffer.new(io)
+        buf = ::Protobuf::Buffer.new(io)
         {% for tag, field in FIELDS %}
           %val{tag} = @{{field[:name].id}}
           %is_enum{tag} = %val{tag}.is_a?(Enum) || %val{tag}.is_a?(Array) && %val{tag}.first?.is_a?(Enum)
-          %wire{tag} = Protobuf::WIRE_TYPES.fetch({{field[:pb_type]}}, %is_enum{tag} ? 0 : 2)
+          %wire{tag} = ::Protobuf::WIRE_TYPES.fetch({{field[:pb_type]}}, %is_enum{tag} ? 0 : 2)
           {%
-            pb_type = Protobuf::PB_TYPE_MAP[field[:pb_type]]
+            pb_type = ::Protobuf::PB_TYPE_MAP[field[:pb_type]]
             writer = !!pb_type ? "buf.write_#{field[:pb_type].id}(@#{field[:name].id}.not_nil!)" : "buf.write_message(@#{field[:name].id}.not_nil!)"
           %}
           {% if field[:optional] %}
@@ -201,11 +201,11 @@ module Protobuf
           return self.{{field[:name].id}} if {{field[:name].id.stringify}} == key
         {% end %}
 
-        raise Protobuf::Error.new("Field not found: `#{key}`")
+        raise ::Protobuf::Error.new("Field not found: `#{key}`")
       end
     end
 
-    def ==(other : Protobuf::Message)
+    def ==(other : ::Protobuf::Message)
       self.class == other.class &&
         to_protobuf.to_slice == other.to_protobuf.to_slice
     end

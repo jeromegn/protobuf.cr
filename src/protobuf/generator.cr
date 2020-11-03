@@ -320,7 +320,7 @@ module Protobuf
       puts "#{structure} #{message_type.name}"
 
       indent do
-        puts "include Protobuf::Message"
+        puts "include ::Protobuf::Message"
         message_type.enum_type.not_nil!.each { |et| enum!(et) } unless message_type.enum_type.nil?
         message_type.nested_type.not_nil!.each { |mt| message!(mt) } unless message_type.nested_type.nil?
         puts nil
