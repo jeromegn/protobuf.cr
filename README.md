@@ -12,7 +12,7 @@ dependencies:
     github: jeromegn/protobuf.cr
 ```
 
-### Install protobuf
+### 1. Install protobuf
 
 macOS:
 ```brew install protobuf```
@@ -20,11 +20,38 @@ macOS:
 Ubuntu
 ```sudo apt-get install -y protobuf-compiler```
 
-## Versioning
+### 2. Install the protoc plugin
 
-This library does not follow semver conventions for versioning. It started off at v2.0.0 because it supports protobuf v2. From there, it'll increment versions based on semver, except for breaking changes, where I will not increment the major version.
+##### macOS:
+
+```
+brew install jeromegn/tap/protoc-gen-crystal
+```
+
+##### Ubuntu:
+
+```
+crystal build bin/protoc-gen-crystal.cr -o ~/bin/protoc-gen-crystal
+```
+
 
 ## Usage
+
+### Generate `.pb.cr` files
+
+Protobuf provides the `protoc` executable to encode, decode and **generate** language-specific protobuf mappings via plugins.
+
+```bash
+protoc -I <.protos_basepath> --crystal_out <path_to_folder_for_protobufs> <path_to_{.proto,*.protos}>
+```
+
+#### Generator options
+
+The generator is configurable via environment variables:
+
+- `PROTOBUF_NS` - If your want to namespace everything under a module (default: `""`). Please write with a CamelCase format (ie: `"MesosMessage"` would produce `module MesosMessage`)
+- `STRIP_FROM_PACKAGE` - Protobuf has package namespaces and sometimes messages reference other namespaces (ie: `mesos.v1.scheduler.Call`), but you want those to be namespaced in a Crystal-like fashion (ie: `Scheduler::Call`), then you can specify a string to strip from the packages for each file (ie: `STRIP_FROM_PACKAGE=mesos.v1`) and the rest will be CamelCased
+
 
 ### Decoding and encoding messages
 
@@ -39,6 +66,7 @@ enum Foo
   FOO
 end
 
+# Struct generated from a .proto file.  Don't create this yourself
 struct MyMessage
   include Protobuf::Message
   contract do
@@ -75,40 +103,13 @@ All field types supported by the protobuf protocol v2 are available as symbols o
 
 Using the `contract` block creates an initializer with all the properties defined in it. It also creates an initializer which can consume a `Protobuf::Buffer` (used by `from_protobuf` method), not unlike `JSON::PullParser`.
 
-### Generating Crystal protobuf messages
-
-Protobuf provides the `protoc` executable to encode, decode and **generate** language-specific protobuf messages via plugins.
-
-#### 1. Install the protoc plugin
-
-##### macOS:
-
-```
-brew install jeromegn/tap/protoc-gen-crystal
-```
-
-##### Ubuntu:
-
-```
-crystal build bin/protoc-gen-crystal.cr -o ~/bin/protoc-gen-crystal
-```
-
-#### 2. Generate `.pb.cr` files
-
-```bash
-protoc -I <.protos_basepath> --crystal_out <path_to_folder_for_protobufs> <path_to_{.proto,*.protos}>
-```
-
-#### Generator options
-
-The generator is configurable via environment variables:
-
-- `PROTOBUF_NS` - If your want to namespace everything under a module (default: `""`). Please write with a CamelCase format (ie: `"MesosMessage"` would produce `module MesosMessage`)
-- `STRIP_FROM_PACKAGE` - Protobuf has package namespaces and sometimes messages reference other namespaces (ie: `mesos.v1.scheduler.Call`), but you want those to be namespaced in a Crystal-like fashion (ie: `Scheduler::Call`), then you can specify a string to strip from the packages for each file (ie: `STRIP_FROM_PACKAGE=mesos.v1`) and the rest will be CamelCased
-
 ## Known Limitations
 
 - Does not support non-UTF8 strings...
+
+## Versioning
+
+This library does not follow semver conventions for versioning. It started off at v2.0.0 because it supports protobuf v2. From there, it'll increment versions based on semver, except for breaking changes, where I will not increment the major version.
 
 ## Development
 
