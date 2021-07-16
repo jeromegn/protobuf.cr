@@ -3,6 +3,7 @@
 /.crystal/
 /.shards/
 /bin/protoc-gen-crystal
+/bin/protoc-gen-crystal.dwarf
 
 
 # Libraries don't need dependency lock
