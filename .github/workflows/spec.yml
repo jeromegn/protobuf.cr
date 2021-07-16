@@ -1,0 +1,21 @@
+name: Spec
+
+on: [push]
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+
+    strategy:
+      matrix:
+        crystal: [1.1.0, 1.0.0]
+
+    container:
+      image: crystallang/crystal:${{ matrix.crystal }}
+
+    steps:
+    - uses: actions/checkout@v2
+    - name: Install dependencies
+      run: shards install
+    - name: Run crystal spec
+      run: crystal spec
