@@ -74,7 +74,7 @@ module Protobuf
 
         optional :options, FieldOptions, 8
 
-        ## For oneof members contains the index within the oneof
+        ## For oneof members contains the index of the oneof
         optional :oneof_index, :int32, 9
       end
     end
