@@ -6,8 +6,12 @@ jobs:
   build:
     runs-on: ubuntu-latest
 
+    strategy:
+      matrix:
+        crystal: [1.1.0, 1.0.0]
+
     container:
-      image: crystallang/crystal:1.0.0
+      image: crystallang/crystal:${{ matrix.crystal }}
 
     steps:
     - uses: actions/checkout@v2
