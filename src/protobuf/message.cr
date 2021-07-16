@@ -1,8 +1,8 @@
 module Protobuf
   module Message
-
     macro contract_of (syntax, &blk)
       FIELDS = {} of Int32 => HashLiteral(Symbol, ASTNode)
+      ONEOFS = {} of Int32 => String?
       {{yield}}
       _generate_decoder {{syntax}}
       _generate_encoder {{syntax}}
@@ -14,7 +14,7 @@ module Protobuf
       contract_of "proto2" {{blk}}
     end
 
-    macro _add_field(tag, name, pb_type, options = {} of Symbol => Bool)
+    macro _add_field(tag, name, pb_type, options = {} of Symbol => Bool, oneof_index = nil)
       {%
         t = ::Protobuf::PB_TYPE_MAP[pb_type] || pb_type
         FIELDS[tag] = {
@@ -27,20 +27,31 @@ module Protobuf
           repeated:     !!options[:repeated],
           default:      options[:default],
           packed:       !!options[:packed],
+          oneof_index:  oneof_index
         }
       %}
     end
 
-    macro optional(name, type, tag, default = nil, repeated = false, packed = false)
-      _add_field({{tag.id}}, {{name}}, {{type}}, {optional: true, default: {{default}}, repeated: {{repeated}}, packed: {{packed}}})
+    macro optional(name, type, tag, default = nil, repeated = false, packed = false, oneof_index = nil)
+      _add_field({{tag.id}}, {{name}}, {{type}},
+                 {optional: true, default: {{default}}, repeated: {{repeated}}, packed: {{packed}}}, oneof_index: {{oneof_index}})
     end
 
-    macro required(name, type, tag, default = nil)
-      _add_field({{tag.id}}, {{name}}, {{type}}, {default: {{default}}})
+    macro required(name, type, tag, default = nil, oneof_index = nil)
+      _add_field({{tag.id}}, {{name}}, {{type}}, {default: {{default}}}, {{oneof_index}})
     end
 
     macro repeated(name, type, tag, packed = false)
       optional({{name}}, {{type}}, {{tag}}, nil, true, {{packed}})
+    end
+
+    macro oneof(index, name)
+      {% ONEOFS[index] = name %}
+
+      @{{name.id}} : String?
+      def {{name.id}}
+        @{{name.id}}
+      end
     end
 
     macro extensions(range)
@@ -140,6 +151,9 @@ module Protobuf
           {% end %}
         {% end %}
       )
+        {% for tag, field in FIELDS %}
+          self.{{field[:name].id}} = {{field[:name].id}}
+        {% end %}
       end
     end
 
@@ -192,6 +206,24 @@ module Protobuf
     macro _generate_getters_setters
       {% for tag, field in FIELDS %}
         property {{field[:name].id}} : {{field[:cast_type]}}
+        def {{field[:name].id}}=(value : {{field[:cast_type]}})
+          @{{field[:name].id}} = value
+
+          # If this field is a member of a oneof..
+          {% unless field[:oneof_index] == nil %}
+            unless value.nil?
+              # ..we set the oneof to the name of the this field..
+              @{{ONEOFS[field[:oneof_index]].id}} = {{field[:name].id.stringify}}
+              # ..and clear the other members of the oneof
+              {% for neighbor_tag, neighbor_field in FIELDS %}
+                {% if neighbor_tag != tag && neighbor_field[:oneof_index] == field[:oneof_index] %}
+                  @{{neighbor_field[:name].id}} = {{neighbor_field[:default]}}
+                {% end %}
+              {% end %}
+            end
+          {% end %}
+
+        end
       {% end %}
     end
 
