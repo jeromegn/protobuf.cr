@@ -243,7 +243,7 @@ end
 
 module Protobuf
   class Generator
-    # Turns `foo/bar/batz.proto` into `foo_bar_batz`
+    # Turns `foo/bar/batz.proto` into `foo_bar_batz.pb.cr`
     def self.output_filename(path)
       path.split(".")[0..-2].join("").gsub(File::SEPARATOR, "_") + ".pb.cr"
     end
