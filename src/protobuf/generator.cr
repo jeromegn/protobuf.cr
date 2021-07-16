@@ -243,6 +243,11 @@ end
 
 module Protobuf
   class Generator
+    # Turns `foo/bar/batz.proto` into `foo_bar_batz`
+    def self.output_filename(path)
+      path.split(".")[0..-2].join("").gsub(File::SEPARATOR, "_") + ".pb.cr"
+    end
+
     def self.compile(req)
       raise Error.new("no files to generate") if req.proto_file.nil?
       package_map = {} of String => String
@@ -254,7 +259,7 @@ module Protobuf
       files = req.proto_file.not_nil!.map do |file|
         generator = new(file, package_map)
         CodeGeneratorResponse::File.new(
-          name: File.basename(file.name.not_nil!, ".proto") + ".pb.cr",
+          name: self.output_filename(file.name.not_nil!),
           content: generator.compile
         )
       end
@@ -279,7 +284,7 @@ module Protobuf
         puts nil
 
         unless @file.dependency.nil?
-          @file.dependency.not_nil!.each { |dp| puts "require \"./#{File.basename(dp.not_nil!, ".proto") + ".pb.cr"}\"" }
+          @file.dependency.not_nil!.each { |dp| puts "require \"./#{self.class.output_filename(dp.not_nil!)}\"" }
           puts nil
         end
 
