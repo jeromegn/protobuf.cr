@@ -345,6 +345,7 @@ module Protobuf
           puts "contract_of \"#{syntax}\" do"
           indent do
             message_type.field.not_nil!.each { |f| field!(f, syntax) } unless message_type.field.nil?
+            message_type.oneof_decl.not_nil!.each_with_index { |oo, i| oneof!(oo, i) } unless message_type.oneof_decl.nil?
           end
           puts "end"
         end
