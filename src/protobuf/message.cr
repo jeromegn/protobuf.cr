@@ -137,6 +137,10 @@ module Protobuf
             @{{field[:name].id}} = (%var{tag}).as({{field[:cast_type]}})
           {% end %}
         {% end %}
+
+        {% for tag, field in FIELDS %}
+          self.{{field[:name].id}} = @{{field[:name].id}}
+        {% end %}
       end
 
       def initialize(
