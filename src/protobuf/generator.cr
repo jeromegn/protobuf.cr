@@ -412,7 +412,7 @@ module Protobuf
           field_desc += ", packed: true" if field.options.not_nil!.packed
         end
       end
-      field_desc += ", oneof_index: #{field.oneof_index}" unless field.oneof_index.nil?
+      field_desc += ", oneof_index: #{field.oneof_index}" if field.oneof_index
       puts field_desc
     end
 
