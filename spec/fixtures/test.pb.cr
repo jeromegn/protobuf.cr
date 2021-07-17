@@ -15,9 +15,7 @@ struct Test
     required :sint64, :sint64, 13
     required :bool, :bool, 14
 
-    # "enum" is a reserved keyword in
-    # crystal so we use "my_enum" for this one
-    repeated :my_enum, SomeEnum, 15
+    repeated :enum, SomeEnum, 15
 
     required :fixed64, :fixed64, 16
     required :sfixed64, :sfixed64, 17

@@ -25,7 +25,7 @@ module TestMessagesV3
       optional :sint32, :sint32, 12
       optional :sint64, :sint64, 13
       optional :bool_e, :bool, 14
-      repeated :my_enum, SomeEnum, 15
+      repeated :enum, SomeEnum, 15
       optional :fixed64, :fixed64, 16
       optional :sfixed64, :sfixed64, 17
       optional :double, :double, 18

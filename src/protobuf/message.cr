@@ -152,7 +152,7 @@ module Protobuf
         {% end %}
       )
         {% for tag, field in FIELDS %}
-          self.{{field[:name].id}} = {{field[:name].id}}
+          self.{{field[:name].id}} = @{{field[:name].id}}
         {% end %}
       end
     end
