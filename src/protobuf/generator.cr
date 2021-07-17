@@ -1,3 +1,5 @@
+require "file_utils"
+
 #NOTE: all descriptors defined here are derived from
 # https://github.com/google/protobuf/blob/master/src/google/protobuf/compiler/plugin.proto
 #
@@ -243,9 +245,16 @@ end
 
 module Protobuf
   class Generator
-    # Turns `foo/bar/batz.proto` into `foo_bar_batz.pb.cr`
-    def self.output_filename(path)
-      path.split(".")[0..-2].join("").gsub(File::SEPARATOR, "_") + ".pb.cr"
+    def self.output_filename(input_path)
+      if ENV["PROTOC_GEN_CRYSTAL_PATHS"]? == "source_relative"
+        # Turns `foo/bar/batz.proto` into `foo/bar/batz.pb.cr`
+        output_path = input_path.split(".")[0..-2].join("") + ".pb.cr"
+        FileUtils.mkdir_p(File.dirname(output_path))
+        output_path
+      else
+        # Turns `foo/bar/batz.proto` into `foo_bar_batz.pb.cr`
+        input_path.split(".")[0..-2].join("").gsub(File::SEPARATOR, "_") + ".pb.cr"
+      end
     end
 
     def self.compile(req)
