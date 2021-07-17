@@ -276,6 +276,7 @@ module Protobuf
         package_part = package_name ? "for #{package_name}" : ""
         puts "## Generated from #{@file.name} #{package_part}".strip
         puts "require \"protobuf\""
+        puts "require \"json\""
         puts nil
 
         unless @file.dependency.nil?
@@ -335,9 +336,12 @@ module Protobuf
             message_type.field.not_nil!.each { |f| field!(f, syntax) } unless message_type.field.nil?
           end
           puts "end"
+
+          puts nil
+          puts "include JSON::Serializable"
         end
+        puts "end"
       end
-      puts "end"
     end
 
     def field!(field, syntax)
