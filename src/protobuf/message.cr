@@ -52,6 +52,16 @@ module Protobuf
         new(::Protobuf::Buffer.new(io))
       end
 
+      # `JSON::Serializable` populates our object without
+      # calling the setters and then invokes `after_initialize`.
+      # We do want our setters to be called (e.g. for `oneof`-handling)
+      # and so we do that here.
+      def after_initialize
+        {% for tag, field in FIELDS %}
+          self.{{field[:name].id}} = @{{field[:name].id}}
+        {% end %}
+      end
+
       def initialize(buf : ::Protobuf::Buffer)
         {% for tag, field in FIELDS %}
           %var{tag} = nil
