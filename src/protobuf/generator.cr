@@ -259,7 +259,7 @@ module Protobuf
       files = req.proto_file.not_nil!.map do |file|
         generator = new(file, package_map)
         CodeGeneratorResponse::File.new(
-          name: self.output_filename(file.name.not_nil!),
+          name: output_filename(file.name.not_nil!),
           content: generator.compile
         )
       end
