@@ -73,6 +73,9 @@ module Protobuf
         optional :default_value, :string, 7
 
         optional :options, FieldOptions, 8
+
+        ## For oneof members contains the index of the oneof
+        optional :oneof_index, :int32, 9
       end
     end
 
@@ -81,6 +84,14 @@ module Protobuf
 
       contract do
         optional :packed, :bool, 2
+      end
+    end
+
+    struct OneofDescriptorProto
+      include Protobuf::Message
+
+      contract do
+        optional :name, :string, 1
       end
     end
 
@@ -184,6 +195,7 @@ module Protobuf
         repeated :extended,    CodeGeneratorRequest::FieldDescriptorProto, 6
         repeated :nested_type, CodeGeneratorRequest::DescriptorProto,      3
         repeated :enum_type,   CodeGeneratorRequest::EnumDescriptorProto,  4
+        repeated :oneof_decl,  CodeGeneratorRequest::OneofDescriptorProto, 8
       end
     end
 
@@ -333,11 +345,16 @@ module Protobuf
           puts "contract_of \"#{syntax}\" do"
           indent do
             message_type.field.not_nil!.each { |f| field!(f, syntax) } unless message_type.field.nil?
+            message_type.oneof_decl.not_nil!.each_with_index { |oo, i| oneof!(oo, i) } unless message_type.oneof_decl.nil?
           end
           puts "end"
         end
       end
       puts "end"
+    end
+
+    def oneof!(oneof_decl, index)
+      puts "oneof #{index}, \"#{oneof_decl.name}\""
     end
 
     def field!(field, syntax)
@@ -396,6 +413,7 @@ module Protobuf
           field_desc += ", packed: true" if field.options.not_nil!.packed
         end
       end
+      field_desc += ", oneof_index: #{field.oneof_index}" if field.oneof_index
       puts field_desc
     end
 
