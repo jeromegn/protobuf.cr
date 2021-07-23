@@ -52,6 +52,18 @@ module Protobuf
       def {{name.id}}
         @{{name.id}}
       end
+
+      def {{name.id}}!
+        @{{name.id}}.not_nil!
+      end
+
+      def {{name.id}}_value
+        self[{{ONEOFS[index].id}}.not_nil!]
+      end
+
+      def {{name.id}}_value!
+        @{{name.id}}_value.not_nil!
+      end
     end
 
     macro extensions(range)
@@ -226,7 +238,10 @@ module Protobuf
               {% end %}
             end
           {% end %}
+        end
 
+        def {{field[:name].id}}!
+          @{{field[:name].id}}.not_nil!
         end
       {% end %}
     end
