@@ -60,7 +60,7 @@ module Protobuf
       def {{name.id}}_value
         {% for tag, field in FIELDS %}
           {% if field[:oneof_index] == index %}
-          return @{{field[:name].id}} if self[{{ONEOFS[index].id}}.not_nil!] == {{ field[:name] }}
+            return @{{field[:name].id}} if @{{ONEOFS[index].id}} == {{ field[:name] }}.to_s
           {% end %}
         {% end %}
         nil
