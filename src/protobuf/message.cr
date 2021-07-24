@@ -58,11 +58,16 @@ module Protobuf
       end
 
       def {{name.id}}_value
-        self[{{ONEOFS[index].id}}.not_nil!]
+        {% for tag, field in FIELDS %}
+          {% if field[:oneof_index] == index %}
+          return @{{field[:name].id}} if self[{{ONEOFS[index].id}}.not_nil!] == {{ field[:name] }}
+          {% end %}
+        {% end %}
+        nil
       end
 
       def {{name.id}}_value!
-        @{{name.id}}_value.not_nil!
+        {{name.id}}_value.not_nil!
       end
     end
 
