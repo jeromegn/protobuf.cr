@@ -74,8 +74,32 @@ module Protobuf
 
         optional :options, FieldOptions, 8
 
-        ## For oneof members contains the index of the oneof
+        ## If set, gives the index of a oneof in the containing type's oneof_decl
+        ## list.  This field is a member of that oneof.
         optional :oneof_index, :int32, 9
+
+        ##  If true, this is a proto3 "optional". When a proto3 field is optional, it
+        ##  tracks presence regardless of field type.
+        ##
+        ##  When proto3_optional is true, this field must be belong to a oneof to
+        ##  signal to old proto3 clients that presence is tracked for this field. This
+        ##  oneof is known as a "synthetic" oneof, and this field must be its sole
+        ##  member (each proto3 optional field gets its own synthetic oneof). Synthetic
+        ##  oneofs exist in the descriptor only, and do not generate any API. Synthetic
+        ##  oneofs must be ordered after all "real" oneofs.
+        ##
+        ##  For message fields, proto3_optional doesn't create any semantic change,
+        ##  since non-repeated message fields always track presence. However it still
+        ##  indicates the semantic detail of whether the user wrote "optional" or not.
+        ##  This can be useful for round-tripping the .proto file. For consistency we
+        ##  give message fields a synthetic oneof also, even though it is not required
+        ##  to track presence. This is especially important because the parser can't
+        ##  tell if a field is a message or an enum, so it must always create a
+        ##  synthetic oneof.
+        ##
+        ##  Proto2 optional fields do not set this flag, because they already indicate
+        ##  optional with `LABEL_OPTIONAL`.
+        optional :proto3_optional, :bool, 17
       end
     end
 
@@ -248,6 +272,7 @@ module Protobuf
     end
 
     contract do
+      optional :supported_features, :uint64, 2
       repeated :file, CodeGeneratorResponse::File, 15
     end
   end
@@ -270,7 +295,9 @@ module Protobuf
           content: generator.compile
         )
       end
-      CodeGeneratorResponse.new(file: files)
+      # `supported_features` is explained here:
+      # https://github.com/protocolbuffers/protobuf/blob/master/src/google/protobuf/compiler/plugin.proto#L112
+      CodeGeneratorResponse.new(file: files, supported_features: 1)
     end
 
     @package_name : String?
@@ -341,10 +368,11 @@ module Protobuf
 
         syntax = @file.syntax.nil? ? "proto2" : @file.syntax
 
-        unless message_type.field.nil?
+        mt_field = message_type.field
+        unless mt_field.nil?
           puts "contract_of \"#{syntax}\" do"
           indent do
-            message_type.field.not_nil!.each { |f| field!(f, syntax) } unless message_type.field.nil?
+            mt_field.each { |f| field!(f, syntax) } # unless mt_field.nil?
             message_type.oneof_decl.not_nil!.each_with_index { |oo, i| oneof!(oo, i) } unless message_type.oneof_decl.nil?
           end
           puts "end"
@@ -354,7 +382,15 @@ module Protobuf
     end
 
     def oneof!(oneof_decl, index)
-      puts "oneof #{index}, \"#{oneof_decl.name}\""
+      # This feels wrong. We rely on the the leading underscore
+      # to detect synthetic oneofs. This works but there must be
+      # a better way (yet to be discovered).
+      # https://github.com/protocolbuffers/protobuf/blob/master/docs/implementing_proto3_presence.md#updating-a-code-generator
+      if oneof_decl.name.not_nil![0] == '_'
+        puts "synthetic_oneof #{index}, \"#{oneof_decl.name}\""
+      else
+        puts "oneof #{index}, \"#{oneof_decl.name}\""
+      end
     end
 
     def field!(field, syntax)
@@ -413,7 +449,7 @@ module Protobuf
           field_desc += ", packed: true" if field.options.not_nil!.packed
         end
       end
-      field_desc += ", oneof_index: #{field.oneof_index}" if field.oneof_index
+      field_desc += ", oneof_index: #{field.oneof_index}" if field.oneof_index && field.proto3_optional != true
       puts field_desc
     end
 

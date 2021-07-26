@@ -38,11 +38,19 @@ module Protobuf
     end
 
     macro required(name, type, tag, default = nil, oneof_index = nil)
-      _add_field({{tag.id}}, {{name}}, {{type}}, {default: {{default}}}, {{oneof_index}})
+      _add_field({{tag.id}}, {{name}}, {{type}}, {default: {{default}}}, oneof_index: {{oneof_index}})
     end
 
     macro repeated(name, type, tag, packed = false)
       optional({{name}}, {{type}}, {{tag}}, nil, true, {{packed}})
+    end
+
+    macro synthetic_oneof(index, name)
+      # Synthetic oneofs don't get any special API,
+      # they are supposed to behave like proto2 optional fields.
+      #
+      # Leaving this macro in here as a placeholder regardless,
+      # in case special treatment will be needed later.
     end
 
     macro oneof(index, name)
