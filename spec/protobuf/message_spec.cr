@@ -59,4 +59,96 @@ describe Protobuf::Message do
     test4 = TestMessagesProto2::Test4.new(d: [] of Int32)
     test4.to_protobuf.empty?.should be_true
   end
+
+  it "handles oneof in proto2" do
+    # When multiple oneof values are populated
+    # by the ctor only the first survives
+    msg = TestMessagesProto2::TestOneof1.new(
+      a: 1,
+      oo0_a: 2, oo0_b: 3, oo0_c: 4,
+      b: 5,
+      oo1_a: 6, oo1_b: 7, oo1_c: 8
+    )
+
+    payload = [ msg.a, msg.oo0_a, msg.oo0_b, msg.oo0_c, msg.b, msg.oo1_a, msg.oo1_b, msg.oo1_c ]
+    payload.should eq([1, 2, nil, nil, 5, 6, nil, nil])
+
+    # `msg.foo` tells us the string name
+    # of the member `foo` that is set
+    msg.oo0.should eq("oo0_a")
+    msg.oo1.should eq("oo1_a")
+
+    # Setting values outside of oneof's leaves the oneof's untouched
+    msg.a = 1
+    msg.b = 5
+    payload = [ msg.a, msg.oo0_a, msg.oo0_b, msg.oo0_c, msg.b, msg.oo1_a, msg.oo1_b, msg.oo1_c ]
+    payload.should eq([1, 2, nil, nil, 5, 6, nil, nil])
+
+    # Setting a oneof value resets the others in the same oneof
+    msg.oo0_b = 3
+    payload = [ msg.a, msg.oo0_a, msg.oo0_b, msg.oo0_c, msg.b, msg.oo1_a, msg.oo1_b, msg.oo1_c ]
+    payload.should eq([1, nil, 3, nil, 5, 6, nil, nil])
+    msg.oo0.should eq("oo0_b")
+
+    msg.oo1_b = 7
+    payload = [ msg.a, msg.oo0_a, msg.oo0_b, msg.oo0_c, msg.b, msg.oo1_a, msg.oo1_b, msg.oo1_c ]
+    payload.should eq([1, nil, 3, nil, 5, nil, 7, nil])
+    msg.oo0.should eq("oo0_b")
+    msg.oo1.should eq("oo1_b")
+  end
+
+  it "handles oneof in proto2 and proto3" do
+    [TestMessagesProto2::TestOneof1, TestMessagesProto3::TestOneof1].each do |message_class|
+      # When multiple oneof values are populated
+      # by the ctor only the first survives
+      msg = message_class.new(
+        a: 1,
+        oo0_a: 2, oo0_b: 3, oo0_c: 4,
+        b: 5,
+        oo1_a: 6, oo1_b: 7, oo1_c: 8
+      )
+
+      payload = [ msg.a, msg.oo0_a, msg.oo0_b, msg.oo0_c, msg.b, msg.oo1_a, msg.oo1_b, msg.oo1_c ]
+      payload.should eq([1, 2, nil, nil, 5, 6, nil, nil])
+
+      # `msg.foo` tells us the string name
+      # of the member `foo` that is set
+      msg.oo0.should eq("oo0_a")
+      msg.oo1.should eq("oo1_a")
+
+      # Setting values outside of oneof's leaves the oneof's untouched
+      msg.a = 1
+      msg.b = 5
+      payload = [ msg.a, msg.oo0_a, msg.oo0_b, msg.oo0_c, msg.b, msg.oo1_a, msg.oo1_b, msg.oo1_c ]
+      payload.should eq([1, 2, nil, nil, 5, 6, nil, nil])
+
+      # Setting a oneof value resets the others in the same oneof
+      msg.oo0_b = 3
+      payload = [ msg.a, msg.oo0_a, msg.oo0_b, msg.oo0_c, msg.b, msg.oo1_a, msg.oo1_b, msg.oo1_c ]
+      payload.should eq([1, nil, 3, nil, 5, 6, nil, nil])
+      msg.oo0.should eq("oo0_b")
+
+      msg.oo1_b = 7
+      payload = [ msg.a, msg.oo0_a, msg.oo0_b, msg.oo0_c, msg.b, msg.oo1_a, msg.oo1_b, msg.oo1_c ]
+      payload.should eq([1, nil, 3, nil, 5, nil, 7, nil])
+      msg.oo0.should eq("oo0_b")
+      msg.oo1.should eq("oo1_b")
+
+      # Serialization and deserialization through protobuf
+      deser_msg = msg.class.from_protobuf(msg.to_protobuf)
+      msg.should eq(deser_msg)
+
+      deser_msg.a.should eq(1)
+      deser_msg.oo0_a.should eq(nil)
+      deser_msg.oo0_b.should eq(3)
+      deser_msg.oo0_c.should eq(nil)
+
+      deser_msg.oo1_a.should eq(nil)
+      deser_msg.oo1_b.should eq(7)
+      deser_msg.oo1_c.should eq(nil)
+
+      deser_msg.oo0.should eq("oo0_b")
+      deser_msg.oo1.should eq("oo1_b")
+    end
+  end
 end
