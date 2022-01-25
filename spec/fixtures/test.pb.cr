@@ -48,4 +48,6 @@ end
 struct EmptyMessage
   include ::Protobuf::Message
   
+  contract_of "proto2" do
+  end
 end
