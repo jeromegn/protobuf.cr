@@ -45,9 +45,7 @@ struct Pair
   end
 end
 
-class EmptyMessage
-  include Protobuf::Message
-
-  contract do
-  end
+struct EmptyMessage
+  include ::Protobuf::Message
+  
 end

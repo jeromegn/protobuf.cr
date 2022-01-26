@@ -37,6 +37,9 @@ enum SomeEnum {
     NEVER = 3;
 }
 
+message EmptyMessage {
+}
+
 extend Test {
     optional bool gtt = 100;
     optional double gtg = 101;
