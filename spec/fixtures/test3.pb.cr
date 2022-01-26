@@ -1,5 +1,5 @@
-## Generated from test3.proto
-#require "protobuf"
+## Generated from test3.proto for TestMessagesV3
+# require "protobuf"
 
 module TestMessagesV3
   enum SomeEnum
@@ -8,10 +8,10 @@ module TestMessagesV3
     NO = 2
     NEVER = 3
   end
-
+  
   struct Test3
-    include Protobuf::Message
-
+    include ::Protobuf::Message
+    
     contract_of "proto3" do
       optional :f1, :string, 1
       optional :f2, :int64, 2
@@ -34,36 +34,13 @@ module TestMessagesV3
       optional :float, :float, 21
     end
   end
-
+  
   struct Pair
-    include Protobuf::Message
-
+    include ::Protobuf::Message
+    
     contract_of "proto3" do
       optional :key, :string, 1
       optional :value, :string, 2
     end
   end
-
-
-  struct ProcessCreated
-    include Protobuf::Message
-
-    contract_of "proto2" do
-      required :time_stamp, :int64, 1
-      required :agent_guid, :string, 2
-      required :pid, :int32, 3
-      required :process_uuid, :string, 4
-      required :process_image_path, :string, 5
-      required :process_md5, :string, 6
-      required :parent_process_pid, :int32, 7
-      required :parent_process_uuid, :string, 8
-      required :account_name, :string, 9
-      required :domain_name, :string, 10
-      optional :command_line, :string, 11
-      optional :site_id, :string, 12
-      optional :uuid, :string, 13
-      optional :process_writer, :string, 14
-    end
   end
-
-end
