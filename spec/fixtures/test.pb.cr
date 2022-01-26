@@ -30,6 +30,9 @@ struct Test
     required :fixed32, :fixed32, 19
     required :sfixed32, :sfixed32, 20
     required :float, :float, 21
+
+    optional :gtt, :bool, 100
+    optional :gtg, :double, 101
   end
 end
 
@@ -39,5 +42,12 @@ struct Pair
   contract_of "proto2" do
     required :key, :string, 1
     optional :value, :string, 2
+  end
+end
+
+class EmptyMessage
+  include Protobuf::Message
+
+  contract do
   end
 end
