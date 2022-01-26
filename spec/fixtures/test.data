@@ -39,5 +39,5 @@ double: 20.64
 fixed32: 4294967295
 sfixed32: 2147483647
 float: 20.32
-[gtt]: true
-[gtg]: 20.0855369
+gtt: true
+gtg: 20.0855369

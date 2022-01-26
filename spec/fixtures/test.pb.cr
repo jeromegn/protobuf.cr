@@ -30,7 +30,6 @@ struct Test
     required :fixed32, :fixed32, 19
     required :sfixed32, :sfixed32, 20
     required :float, :float, 21
-
     optional :gtt, :bool, 100
     optional :gtg, :double, 101
   end

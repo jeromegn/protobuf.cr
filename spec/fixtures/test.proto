@@ -23,7 +23,8 @@ message Test {
     required sfixed32 sfixed32 = 20;
     required float float = 21;
 
-    extensions 100 to max;
+    optional bool gtt = 100;
+    optional double gtg = 101;
 }
 
 message Pair {
@@ -40,7 +41,3 @@ enum SomeEnum {
     NEVER = 3;
 }
 
-extend Test {
-    optional bool gtt = 100;
-    optional double gtg = 101;
-}
