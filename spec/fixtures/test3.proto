@@ -29,6 +29,9 @@ message Test3 {
     
     bool gtt = 100;
     double gtg = 101;
+    
+    repeated string ss = 22;
+    repeated bytes bb = 23;
 }
 
 message Pair {

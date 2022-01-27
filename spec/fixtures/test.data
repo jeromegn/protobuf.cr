@@ -41,3 +41,7 @@ sfixed32: 2147483647
 float: 20.32
 gtt: true
 gtg: 20.0855369
+ss: "foo"
+ss: "bar"
+bb: "foo"
+bb: "bar"

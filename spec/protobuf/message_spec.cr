@@ -44,6 +44,9 @@ describe Protobuf::Message do
 
         test.gtt.should eq true
         test.gtg.should eq 20.0855369
+
+        test.ss.should eq ["foo", "bar"]
+        test.bb.should eq ["foo".to_slice, "bar".to_slice]
       end
     end
 
@@ -104,6 +107,9 @@ describe Protobuf::Message do
 
         test.gtt.should eq true
         test.gtg.should eq 20.0855369
+
+        test.ss.should eq ["foo", "bar"]
+        test.bb.should eq ["foo".to_slice, "bar".to_slice]
       end
     end
 

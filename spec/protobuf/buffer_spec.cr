@@ -133,6 +133,20 @@ describe Protobuf::Buffer do
       buf.read_info.should eq({21, 5})
       buf.read_float.should eq(20.32f32)
 
+      # ss: "foo"
+      buf.read_info.should eq({22, 2})
+      buf.read_string.should eq("foo")
+      # ss: "bar"
+      buf.read_info.should eq({22, 2})
+      buf.read_string.should eq("bar")
+
+      # bb: "foo"
+      buf.read_info.should eq({23, 2})
+      buf.read_string.should eq("foo")
+      # bb: "bar"
+      buf.read_info.should eq({23, 2})
+      buf.read_string.should eq("bar")
+
       # [gtt]: true
       buf.read_info.should eq({100, 0})
       buf.read_bool.should eq(true)

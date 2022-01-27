@@ -33,6 +33,8 @@ module TestMessagesV3
       optional :float, :float, 21
       optional :gtt, :bool, 100
       optional :gtg, :double, 101
+      repeated :ss, :string, 22
+      repeated :bb, :bytes, 23
     end
   end
   
