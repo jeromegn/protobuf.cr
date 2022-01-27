@@ -2,9 +2,9 @@
 # require "protobuf"
 
 enum SomeEnum
-  YES = 1
-  NO = 2
-  NEVER = 3
+  YES = 0
+  NO = 1
+  NEVER = 2
 end
 
 struct Test
