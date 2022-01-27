@@ -15,6 +15,6 @@ targets:
   protoc-gen-crystal:
     main: bin/protoc-gen-crystal.cr
 
-crystal: ">= 0.35.0, < 2.0.0"
+crystal: 1.0.0
 
 license: MIT
