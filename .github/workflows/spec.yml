@@ -18,4 +18,4 @@ jobs:
     - name: Install dependencies
       run: shards install
     - name: Run crystal spec
-      run: crystal spec
+      run: make spec
