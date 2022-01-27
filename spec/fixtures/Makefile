@@ -7,11 +7,12 @@ test.data.encoded:
 
 test.pb.cr:
 	protoc --crystal_out=. --plugin=protoc-gen-crystal=../../bin/protoc-gen-crystal test.proto
-	sed -i '' 's/^require/# &/g' test.pb.cr
+	# The -i switch works differently in GNU vs BSD sed
+	sed -i '' 's/^require/# &/g' test.pb.cr || sed -i 's/^require/# &/g' test.pb.cr
 
 test3.pb.cr:
 	protoc --crystal_out=. --plugin=protoc-gen-crystal=../../bin/protoc-gen-crystal test3.proto
-	sed -i '' 's/^require/# &/g' test3.pb.cr
+	sed -i '' 's/^require/# &/g' test3.pb.cr || sed -i 's/^require/# &/g' test3.pb.cr
 
 clean:
 	rm -f $(outputs)
