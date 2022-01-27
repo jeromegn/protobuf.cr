@@ -8,7 +8,13 @@ jobs:
 
     strategy:
       matrix:
-        crystal: [1.1.0, 1.0.0]
+        crystal:
+          - 1.3.2
+          - 1.3.1
+          - 1.3.0
+          - 1.2.0
+          - 1.1.0
+          - 1.0.0
 
     container:
       image: crystallang/crystal:${{ matrix.crystal }}
