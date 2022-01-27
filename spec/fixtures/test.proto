@@ -1,3 +1,5 @@
+syntax = "proto2";
+
 message Test {
     required string f1 = 1;
     required int64 f2 = 2;
@@ -23,12 +25,16 @@ message Test {
     required sfixed32 sfixed32 = 20;
     required float float = 21;
 
-    extensions 100 to max;
+    optional bool gtt = 100;
+    optional double gtg = 101;
 }
 
 message Pair {
     required string key = 1;
     optional string value = 2;
+}
+
+message EmptyMessage {
 }
 
 enum SomeEnum {
@@ -37,7 +43,3 @@ enum SomeEnum {
     NEVER = 3;
 }
 
-extend Test {
-    optional bool gtt = 100;
-    optional double gtg = 101;
-}

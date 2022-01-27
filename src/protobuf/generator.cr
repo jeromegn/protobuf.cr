@@ -329,13 +329,13 @@ module Protobuf
 
         syntax = @file.syntax.nil? ? "proto2" : @file.syntax
 
+        puts "contract_of \"#{syntax}\" do"
         unless message_type.field.nil?
-          puts "contract_of \"#{syntax}\" do"
           indent do
             message_type.field.not_nil!.each { |f| field!(f, syntax) } unless message_type.field.nil?
           end
-          puts "end"
         end
+        puts "end"
       end
       puts "end"
     end
