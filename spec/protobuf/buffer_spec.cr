@@ -107,13 +107,13 @@ describe Protobuf::Buffer do
       buf.read_bool.should eq(true)
       # enum: 1
       buf.read_info.should eq({15, 0})
-      buf.read_int32.should eq(1)
+      buf.read_int32.should eq(0)
       # enum: 2
       buf.read_info.should eq({15, 0})
-      buf.read_int32.should eq(2)
+      buf.read_int32.should eq(1)
       # enum: 3
       buf.read_info.should eq({15, 0})
-      buf.read_int32.should eq(3)
+      buf.read_int32.should eq(2)
       # fixed64: 4294967296
       buf.read_info.should eq({16, 1})
       buf.read_fixed64.should eq(4294967296)

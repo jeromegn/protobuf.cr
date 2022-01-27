@@ -15,7 +15,7 @@ message Test3 {
     uint64 uint64 = 11;
     sint32 sint32 = 12;
     sint64 sint64 = 13;
-    bool boolE = 14;
+    bool bool = 14;
 
     repeated SomeEnum enum = 15;
 
@@ -26,6 +26,9 @@ message Test3 {
     fixed32 fixed32 = 19;
     sfixed32 sfixed32 = 20;
     float float = 21;
+    
+    bool gtt = 100;
+    double gtg = 101;
 }
 
 message Pair {
@@ -34,8 +37,7 @@ message Pair {
 }
 
 enum SomeEnum {
-  ZERO = 0;
-    YES = 1;
-    NO = 2;
-    NEVER = 3;
+    YES = 0;
+    NO = 1;
+    NEVER = 2;
 }

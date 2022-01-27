@@ -3,10 +3,9 @@
 
 module TestMessagesV3
   enum SomeEnum
-    ZERO = 0
-    YES = 1
-    NO = 2
-    NEVER = 3
+    YES = 0
+    NO = 1
+    NEVER = 2
   end
   
   struct Test3
@@ -24,7 +23,7 @@ module TestMessagesV3
       optional :uint64, :uint64, 11
       optional :sint32, :sint32, 12
       optional :sint64, :sint64, 13
-      optional :bool_e, :bool, 14
+      optional :bool, :bool, 14
       repeated :enum, SomeEnum, 15
       optional :fixed64, :fixed64, 16
       optional :sfixed64, :sfixed64, 17
@@ -32,6 +31,8 @@ module TestMessagesV3
       optional :fixed32, :fixed32, 19
       optional :sfixed32, :sfixed32, 20
       optional :float, :float, 21
+      optional :gtt, :bool, 100
+      optional :gtg, :double, 101
     end
   end
   
