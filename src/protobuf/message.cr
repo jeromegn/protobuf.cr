@@ -69,7 +69,7 @@ module Protobuf
             %}
             {% if field[:repeated] %}\
               %var{tag} ||= [] of {{field[:crystal_type]}}
-              {% if (pbVer != "proto2" && pb_type) || field[:packed] %}
+              {% if (pbVer != "proto2" && pb_type && ![String, Slice(UInt8)].includes?(pb_type.resolve)) || field[:packed] %}
                 packed_buf_{{tag}} = buf.new_from_length.not_nil!
                 loop do
                   %packed_var{tag} = {{(!!pb_type ? "packed_buf_#{tag}.read_#{field[:pb_type].id}" : "#{field[:crystal_type]}.new(packed_buf_#{tag})").id}}
@@ -163,7 +163,7 @@ module Protobuf
           {% if field[:optional] %}
             if !@{{field[:name].id}}.nil?
               {% if field[:repeated] %}
-                {% if (pbVer != "proto2" && pb_type) || field[:packed] %}
+                {% if (pbVer != "proto2" && pb_type && ![String, Slice(UInt8)].includes?(pb_type.resolve)) || field[:packed] %}
                   buf.write_info({{tag}}, 2)
                   buf.write_packed(@{{field[:name].id}}, {{field[:pb_type]}})
                 {% else %}
