@@ -95,7 +95,7 @@ describe Protobuf::Buffer do
       buf.read_uint32.should eq(4294967295)
       # uint64: 18446744073709551615
       buf.read_info.should eq({11, 0})
-      buf.read_uint64.should eq(18446744073709551615)
+      buf.read_uint64.should eq(18446744073709551615u64)
       # sint32: -2147483648
       buf.read_info.should eq({12, 0})
       buf.read_sint32.should eq(-2147483648)

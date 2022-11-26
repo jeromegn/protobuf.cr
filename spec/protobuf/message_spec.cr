@@ -1,6 +1,6 @@
 require "../spec_helper"
 
-require "../fixtures/test.pb"
+require "../fixtures/**"
 
 describe Protobuf::Message do
   describe "proto2" do
@@ -25,7 +25,7 @@ describe Protobuf::Message do
         test.bbbb.should eq(Slice[0u8, 1u8, 2u8, 255u8, 254u8, 253u8])
 
         test.uint32.should eq(4294967295)
-        test.uint64.should eq(18446744073709551615)
+        test.uint64.should eq(18446744073709551615u64)
         test.sint32.should eq(-2147483648)
         test.sint64.should eq(-9223372036854775808)
         test.bool.should eq true
@@ -87,7 +87,7 @@ describe Protobuf::Message do
         test.bbbb.should eq(Slice[0u8, 1u8, 2u8, 255u8, 254u8, 253u8])
 
         test.uint32.should eq(4294967295)
-        test.uint64.should eq(18446744073709551615)
+        test.uint64.should eq(18446744073709551615u64)
         test.sint32.should eq(-2147483648)
         test.sint64.should eq(-9223372036854775808)
         test.bool.should eq true
