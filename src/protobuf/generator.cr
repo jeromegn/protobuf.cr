@@ -294,13 +294,17 @@ module Protobuf
       end
     end
 
+    def enum_varname(type_name, enum_name)
+      enum_name.underscore.upcase.lchop(type_name.split("::")[-1].underscore.upcase + "_")
+    end
+
     def enum!(enum_type)
       puts "enum #{enum_type.name}"
       unless enum_type.value.nil?
         indent do
           enum_type.not_nil!.value.not_nil!.each do |ev|
             # Issue 9 - enum constants must start with Capital letter
-            puts "#{ev.name.not_nil!.camelcase} = #{ev.number}"
+            puts "#{enum_varname(enum_type.name.not_nil!, ev.name.not_nil!)} = #{ev.number}"
           end
         end
       end
@@ -369,7 +373,7 @@ module Protobuf
           field.type_name.nil? ?
             field.default_value :
             field.type == CodeGeneratorRequest::FieldDescriptorProto::Type::TYPE_ENUM ?
-              "#{type_name}::#{field.default_value.not_nil!.camelcase}" : # enum
+              "#{type_name}::#{enum_varname(type_name, field.default_value.not_nil!)}" : # enum
               raise Error.new("can't use a default value for non-native / enum types")
         case field.type
         when CodeGeneratorRequest::FieldDescriptorProto::Type::TYPE_DOUBLE
