@@ -154,7 +154,7 @@ module Protobuf
     end
 
     def write_string(str : String)
-      write_bytes(str.encode("UTF-8"))
+      write_bytes(str.to_slice)
     end
 
     def write_fixed32(n : UInt32)
