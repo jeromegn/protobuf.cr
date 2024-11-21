@@ -5,6 +5,8 @@ enum SomeEnum
   YES = 0
   NO = 1
   NEVER = 2
+  OTHER_VALUE = 3
+  SOMEENUMOTHERVALUE = 3
 end
 
 struct Test
