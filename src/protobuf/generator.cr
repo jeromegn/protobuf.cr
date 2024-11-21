@@ -305,6 +305,7 @@ module Protobuf
           enum_type.not_nil!.value.not_nil!.each do |ev|
             # Issue 9 - enum constants must start with Capital letter
             puts "#{enum_varname(enum_type.name.not_nil!, ev.name.not_nil!)} = #{ev.number}"
+            puts "#{ev.name.not_nil!.camelcase} = #{ev.number}"
           end
         end
       end
