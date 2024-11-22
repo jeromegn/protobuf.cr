@@ -153,10 +153,18 @@ module Protobuf
       def to_protobuf(io : IO, embedded = false)
         buf = ::Protobuf::Buffer.new(io)
         {% for tag, field in FIELDS %}
-          %val{tag} = @{{field[:name].id}}
-          %is_enum{tag} = %val{tag}.is_a?(Enum) || %val{tag}.is_a?(Array) && %val{tag}.first?.is_a?(Enum)
-          %wire{tag} = ::Protobuf::WIRE_TYPES.fetch({{field[:pb_type]}}, %is_enum{tag} ? 0 : 2)
           {%
+            resolved_type = field[:crystal_type].resolve?
+
+            is_enum = if resolved_type
+              resolved_type.ancestors.includes?(Enum)
+            else
+              false
+            end
+
+            wire_type = ::Protobuf::WIRE_TYPES[field[:pb_type]]
+            wire =  wire_type.nil? ? (is_enum ? 0 : 2) : wire_type
+
             pb_type = ::Protobuf::PB_TYPE_MAP[field[:pb_type]]
             writer = !!pb_type ? "buf.write_#{field[:pb_type].id}(@#{field[:name].id}.not_nil!)" : "buf.write_message(@#{field[:name].id}.not_nil!)"
           %}
@@ -168,7 +176,7 @@ module Protobuf
                   buf.write_packed(@{{field[:name].id}}, {{field[:pb_type]}})
                 {% else %}
                   @{{field[:name].id}}.not_nil!.each do |item|
-                    buf.write_info({{tag}}, %wire{tag})
+                    buf.write_info({{tag}}, {{wire}})
                     {%
                       writer = !!pb_type ? "buf.write_#{field[:pb_type].id}(item)" : "buf.write_message(item)"
                     %}
@@ -176,12 +184,12 @@ module Protobuf
                   end
                 {% end %}
               {% else %}
-                buf.write_info({{tag}}, %wire{tag})
+                buf.write_info({{tag}}, {{wire}})
                 {{writer.id}}
               {% end %}
             end
           {% else %}
-            buf.write_info({{tag}}, %wire{tag})
+            buf.write_info({{tag}}, {{wire}})
             {{writer.id}}
           {% end %}
         {% end %}
