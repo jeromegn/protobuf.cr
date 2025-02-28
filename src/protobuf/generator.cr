@@ -225,10 +225,15 @@ module Protobuf
 
   struct CodeGeneratorResponse
     include Protobuf::Message
-
+    #A bitmask of supported features that the code generator supports.
+    #This is a bitwise "or" of values from the Feature enum.
+    enum Feature : UInt64 
+      FEATURE_NONE = 0
+      FEATURE_PROTO3_OPTIONAL = 1
+      FEATURE_SUPPORTS_EDITIONS = 2
+    end
     struct File
       include Protobuf::Message
-
       contract do
         optional :name,    :string, 1
         optional :content, :string, 15
@@ -237,6 +242,7 @@ module Protobuf
 
     contract do
       repeated :file, CodeGeneratorResponse::File, 15
+      optional :supported_features, Feature, 2
     end
   end
 end
@@ -258,7 +264,7 @@ module Protobuf
           content: generator.compile
         )
       end
-      CodeGeneratorResponse.new(file: files)
+      CodeGeneratorResponse.new(file: files, supported_features: CodeGeneratorResponse::Feature::FEATURE_PROTO3_OPTIONAL)
     end
 
     @package_name : String?
