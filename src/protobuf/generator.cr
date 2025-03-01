@@ -305,7 +305,10 @@ module Protobuf
       [
         enum_name.underscore.upcase.lchop(type_name.split("::")[-1].underscore.upcase + "_"),
         enum_name.not_nil!.camelcase,
-      ].uniq
+      ]
+        # Make sure it's a valid enum member name
+        .select(&.starts_with?(/[A-Z]/))
+        .uniq
     end
 
     def enum!(enum_type)
