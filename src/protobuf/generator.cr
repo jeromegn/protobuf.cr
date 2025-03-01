@@ -227,6 +227,7 @@ module Protobuf
     include Protobuf::Message
     #A bitmask of supported features that the code generator supports.
     #This is a bitwise "or" of values from the Feature enum.
+    @[Flags]
     enum Feature : UInt64 
       FEATURE_NONE = 0
       FEATURE_PROTO3_OPTIONAL = 1
