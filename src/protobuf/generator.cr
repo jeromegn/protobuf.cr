@@ -1,3 +1,5 @@
+require "file_utils"
+
 #NOTE: all descriptors defined here are derived from
 # https://github.com/google/protobuf/blob/master/src/google/protobuf/compiler/plugin.proto
 #
@@ -250,6 +252,18 @@ end
 
 module Protobuf
   class Generator
+    def self.output_filename(input_path)
+      if ENV["PROTOC_GEN_CRYSTAL_PATHS"]? == "source_relative"
+        # Turns `foo/bar/batz.proto` into `foo/bar/batz.pb.cr`
+        output_path = input_path.split(".")[0..-2].join("") + ".pb.cr"
+        FileUtils.mkdir_p(File.dirname(output_path))
+        output_path
+      else
+        # Turns `foo/bar/batz.proto` into `foo_bar_batz.pb.cr`
+        input_path.split(".")[0..-2].join("").gsub(File::SEPARATOR, "_") + ".pb.cr"
+      end
+    end
+
     def self.compile(req)
       raise Error.new("no files to generate") if req.proto_file.nil?
       package_map = {} of String => String
@@ -261,7 +275,7 @@ module Protobuf
       files = req.proto_file.not_nil!.map do |file|
         generator = new(file, package_map)
         CodeGeneratorResponse::File.new(
-          name: File.basename(file.name.not_nil!, ".proto") + ".pb.cr",
+          name: output_filename(file.name.not_nil!),
           content: generator.compile
         )
       end
@@ -286,7 +300,7 @@ module Protobuf
         puts nil
 
         unless @file.dependency.nil?
-          @file.dependency.not_nil!.each { |dp| puts "require \"./#{File.basename(dp.not_nil!, ".proto") + ".pb.cr"}\"" }
+          @file.dependency.not_nil!.each { |dp| puts "require \"./#{self.class.output_filename(dp.not_nil!)}\"" }
           puts nil
         end
 
