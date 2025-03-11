@@ -122,4 +122,10 @@ describe Protobuf::Message do
       end
     end
   end
+
+  describe "IncludedNames" do
+    it "contains all names of included classes" do
+      Protobuf::Message::IncludedNames.should contain("TestMessagesProto2::Test4")
+    end
+  end
 end
