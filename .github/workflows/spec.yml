@@ -9,14 +9,10 @@ jobs:
     strategy:
       matrix:
         crystal:
-          - 1.14.0
-          - 1.13.3
-          - 1.13.2
-          - 1.13.1
-          - 1.13.0
-          - 1.12.2
-          - 1.12.1
-          - 1.12.0
+          - latest
+          - 1.16.3
+          - 1.15.1
+          - 1.14.1
 
     container:
       image: crystallang/crystal:${{ matrix.crystal }}
