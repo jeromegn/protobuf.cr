@@ -67,7 +67,7 @@ enum Foo
   FOO
 end
 
-# Struct generated from a .proto file.  Don't create this yourself
+# Struct generated from a .proto file.  Don't create this yourself.
 struct MyMessage
   include Protobuf::Message
   contract do
@@ -79,21 +79,20 @@ struct MyMessage
     optional :optional_prop_name, :string, 3
 
     # repeated fields
-    repeated :my_array, :int32, 4 # produces a property of type Array(Int32)?
+    repeated :my_array, :int32, 4 # produces a property of type Array(Int32)?.
   end
 
   # write your methods like you normally would here, if you like.
 end
 
-proto_io = File.read("path/to/encoded/protobuf") # get your IO in some way
+message = File.open("path/to/encoded/protobuf") do |proto_io| # Get an IO to the file or data stream.
+  MyMessage.from_protobuf(proto_io) 			      # returns an instance of `MyMessage`,
+end                                                           # assuming the file is valid protobuf.
 
-msg = MyMessage.from_protobuf(proto_io) # returns a an instance of MyMessage
-                                  # from a valid protobuf encoded message
-
-msg.to_protobuf # return a IO::Memory filled with the encoded message
+message.to_protobuf # return an IO::Memory filled with the encoded message.
 
 some_io = IO::Memory.new
-msg.to_protobuf(some_io) # fills up the provided IO with the encoded message
+message.to_protobuf(some_io) # fills up the provided IO with the encoded message.
 ```
 
 #### Field types
