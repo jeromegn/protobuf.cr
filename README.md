@@ -79,20 +79,21 @@ struct MyMessage
     optional :optional_prop_name, :string, 3
 
     # repeated fields
-    repeated :my_array, :int32, 4 # produces a property of type Array(Int32)?.
+    repeated :my_array, :int32, 4 # produces a property of type Array(Int32)?
   end
 
   # write your methods like you normally would here, if you like.
 end
 
-message = File.open("path/to/encoded/protobuf") do |proto_io| # Get an IO to the file or data stream.
-  MyMessage.from_protobuf(proto_io) 			      # returns an instance of `MyMessage`,
-end                                                           # assuming the file is valid protobuf.
+# Read your message from an IO object, such as a file
+message = File.open("path/to/encoded/protobuf") do |proto_io|
+  MyMessage.from_protobuf(proto_io)
+end
 
-message.to_protobuf # return an IO::Memory filled with the encoded message.
+message.to_protobuf # return an IO::Memory filled with the encoded message
 
 some_io = IO::Memory.new
-message.to_protobuf(some_io) # fills up the provided IO with the encoded message.
+message.to_protobuf(some_io) # fills up the provided IO with the encoded message
 ```
 
 #### Field types
